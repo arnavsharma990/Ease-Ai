@@ -6,43 +6,7 @@ import { headers } from 'next/headers';
 export const runtime = "edge"
 
 // Get environment variables
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'SukoonAI';
-
-// Mock response function for when OpenAI is not available
-function getMockResponse(prompt: string) {
-  const responses = [
-    "I understand how you're feeling. Would you like to talk more about it?",
-    "That sounds challenging. Have you tried any of the breathing exercises in our app?",
-    "I'm here to support you. The mood tracker might help you notice patterns in how you're feeling.",
-    "It's important to acknowledge your feelings. Would journaling about this help?",
-    "Self-care is essential. What's one small thing you could do for yourself today?",
-    "I appreciate you sharing that with me. How long have you been feeling this way?",
-    "That's a common experience. Many people go through similar situations.",
-    "Have you considered trying meditation? Our breathing exercises section has some guided options.",
-    "Your feelings are valid. Would it help to explore some coping strategies together?",
-    "I'm here to listen whenever you need to talk.",
-  ]
-
-  // Simple keyword matching for slightly more relevant responses
-  if (prompt.toLowerCase().includes("sad") || prompt.toLowerCase().includes("depress")) {
-    return "I'm sorry to hear you're feeling down. Remember that it's okay to not be okay sometimes. Would you like to explore some mood-lifting activities?"
-  }
-  if (
-    prompt.toLowerCase().includes("anxious") ||
-    prompt.toLowerCase().includes("worry") ||
-    prompt.toLowerCase().includes("stress")
-  ) {
-    return "Anxiety can be really challenging. Have you tried the 4-7-8 breathing technique in our breathing exercises section? It can help calm your nervous system."
-  }
-  if (prompt.toLowerCase().includes("sleep") || prompt.toLowerCase().includes("tired")) {
-    return "Sleep is so important for mental wellbeing. Our resources section has some tips for better sleep hygiene that might help."
-  }
-
-  // Default to random response
-  return responses[Math.floor(Math.random() * responses.length)]
-}
+const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY;
 
 export async function POST(req: Request) {
   try {
@@ -58,47 +22,73 @@ export async function POST(req: Request) {
 
     const { message } = await req.json();
 
-    // Create conversation array with system prompt and user message
-    const messages: Message[] = [
-      { role: 'system', content: MENTAL_HEALTH_SYSTEM_PROMPT },
-      { role: 'user', content: message }
-    ];
-
     try {
       // Check if API key is available
-      if (!OPENROUTER_API_KEY) {
-        console.error('OpenRouter API key is missing');
-        throw new Error('Missing OPENROUTER_API_KEY');
+      if (!GOOGLE_AI_API_KEY) {
+        console.error('Gemini API key is missing');
+        throw new Error('Missing GOOGLE_AI_API_KEY');
       }
 
       // Log the request configuration (without the full API key)
-      console.log('Making request to OpenRouter with config:', {
-        url: 'https://openrouter.ai/api/v1/chat/completions',
-        hasApiKey: !!OPENROUTER_API_KEY,
-        apiKeyPrefix: OPENROUTER_API_KEY?.substring(0, 10) + '...',
-        siteUrl: SITE_URL,
-        siteName: SITE_NAME
+      console.log('Making request to Gemini API:', {
+        hasApiKey: !!GOOGLE_AI_API_KEY,
+        apiKeyPrefix: GOOGLE_AI_API_KEY?.substring(0, 10) + '...'
       });
 
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': SITE_URL,
-          'X-Title': SITE_NAME
-        },
-        body: JSON.stringify({
-          model: 'openai/gpt-4',
-          messages: messages,
-          temperature: 0.7,
-          max_tokens: 150, // Reduced for shorter responses
-        }),
-      });
+      const response = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': GOOGLE_AI_API_KEY,
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: MENTAL_HEALTH_SYSTEM_PROMPT }]
+              },
+              {
+                role: 'model',
+                parts: [{ text: 'I understand. I will follow these guidelines and provide supportive, brief responses.' }]
+              },
+              {
+                role: 'user',
+                parts: [{ text: message }]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 150,
+              topP: 0.8,
+              topK: 40
+            },
+            safetySettings: [
+              {
+                category: 'HARM_CATEGORY_HARASSMENT',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              },
+              {
+                category: 'HARM_CATEGORY_HATE_SPEECH',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              },
+              {
+                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              },
+              {
+                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              }
+            ]
+          })
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        console.error('OpenRouter API error:', {
+        console.error('Gemini API error:', {
           status: response.status,
           statusText: response.statusText,
           errorData
@@ -107,12 +97,13 @@ export async function POST(req: Request) {
       }
 
       const data = await response.json();
-      return NextResponse.json({ message: data.choices[0].message.content });
+      const aiResponse = data.candidates[0].content.parts[0].text;
+      return NextResponse.json({ message: aiResponse });
     } catch (error: any) {
       console.error('Error in chat route:', error);
       
       // If API key is missing, return a specific error
-      if (error.message.includes('Missing OPENROUTER_API_KEY')) {
+      if (error.message.includes('Missing GOOGLE_AI_API_KEY')) {
         return NextResponse.json(
           { 
             error: 'Configuration error',
