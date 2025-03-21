@@ -8,7 +8,16 @@ export const metadata: Metadata = {
 export default function SubscriptionLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return children;
+  return (
+    <div className="relative min-h-screen">
+      {/* Simple gradient background */}
+      <div 
+        className="fixed inset-0 bg-gradient-to-b from-purple-50/90 via-purple-100/50 to-violet-50/90 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10"
+        aria-hidden="true"
+      />
+      {children}
+    </div>
+  )
 } 
