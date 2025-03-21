@@ -36,30 +36,37 @@ export async function POST(req: Request) {
           'x-goog-api-key': API_CONFIG.GOOGLE_AI_API_KEY!,
         },
         body: JSON.stringify({
-          prompt: {
-            text: `${MENTAL_HEALTH_SYSTEM_PROMPT}\n\nUser: ${message}`
+          contents: [
+            {
+              parts: [
+                {
+                  text: `${MENTAL_HEALTH_SYSTEM_PROMPT}\n\nUser: ${message}`
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 150,
+            topP: 0.8,
+            topK: 40
           },
-          temperature: 0.7,
-          candidateCount: 1,
-          maxOutputTokens: 150,
-          topP: 0.8,
-          topK: 40,
           safetySettings: [
             {
-              category: 'HARM_CATEGORY_HARASSMENT',
-              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
             },
             {
-              category: 'HARM_CATEGORY_HATE_SPEECH',
-              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              category: "HARM_CATEGORY_HATE_SPEECH",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
             },
             {
-              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
             },
             {
-              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
             }
           ]
         })
@@ -76,7 +83,7 @@ export async function POST(req: Request) {
       }
 
       const data = await response.json();
-      const aiResponse = data.candidates[0].output;
+      const aiResponse = data.candidates[0].content.parts[0].text;
       return NextResponse.json({ message: aiResponse });
     } catch (error: any) {
       console.error('Error in chat route:', error);
