@@ -8,6 +8,13 @@ export const runtime = "edge"
 // Get environment variables
 const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY;
 
+// Debug log for environment variables
+console.log('Environment check:', {
+  hasGoogleKey: !!GOOGLE_AI_API_KEY,
+  nodeEnv: process.env.NODE_ENV,
+  envKeys: Object.keys(process.env)
+});
+
 export async function POST(req: Request) {
   try {
     // Check authentication
@@ -25,7 +32,7 @@ export async function POST(req: Request) {
     try {
       // Check if API key is available
       if (!GOOGLE_AI_API_KEY) {
-        console.error('Gemini API key is missing');
+        console.error('Gemini API key is missing. Available env vars:', Object.keys(process.env));
         throw new Error('Missing GOOGLE_AI_API_KEY');
       }
 
