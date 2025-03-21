@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { MENTAL_HEALTH_SYSTEM_PROMPT, generateGeminiResponse } from '@/lib/gemini';
+import { MENTAL_HEALTH_SYSTEM_PROMPT } from '@/lib/openai';
+import { headers } from 'next/headers';
 
 // Set the runtime to edge for best performance
 export const runtime = "edge"
@@ -46,7 +47,8 @@ function getMockResponse(prompt: string) {
 export async function POST(req: Request) {
   try {
     // Check authentication
-    const authHeader = req.headers.get('authorization');
+    const headersList = headers();
+    const authHeader = headersList.get('authorization');
     
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -57,23 +59,68 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    try {
-      // Generate response using Gemini
-      const response = await generateGeminiResponse(messages);
+    // Add system prompt to the beginning of the conversation
+    const conversationWithSystem = [
+      { role: 'system', content: MENTAL_HEALTH_SYSTEM_PROMPT },
+      ...messages
+    ];
 
-      return NextResponse.json({ response });
+    try {
+      // Check if API key is available
+      if (!OPENROUTER_API_KEY) {
+        throw new Error('Missing OPENROUTER_API_KEY');
+      }
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': SITE_URL,
+          'X-Title': SITE_NAME
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4',
+          messages: conversationWithSystem,
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(`API request failed: ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
+      }
+
+      const data = await response.json();
+      return NextResponse.json({ response: data.choices[0].message.content });
     } catch (error: any) {
       console.error('Error in chat route:', error);
+      
+      // If API key is missing, return a specific error
+      if (error.message.includes('Missing OPENROUTER_API_KEY')) {
+        return NextResponse.json(
+          { 
+            error: 'Configuration error',
+            details: 'API key not configured. Please check server configuration.' 
+          },
+          { status: 500 }
+        );
+      }
+
       return NextResponse.json(
-        { error: 'Failed to generate response' },
+        { 
+          error: 'Failed to get AI response',
+          details: error.message 
+        },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error('Error processing request:', error);
+    console.error('Error parsing request:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: 'Invalid request format' },
+      { status: 400 }
     );
   }
 }
