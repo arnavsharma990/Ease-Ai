@@ -10,6 +10,8 @@ const handler = NextAuth({
   ],
   pages: {
     signIn: "/auth/signin",
+    error: "/auth/error",
+    signOut: "/auth/signout",
   },
   callbacks: {
     async session({ session, token }) {
@@ -17,6 +19,13 @@ const handler = NextAuth({
         session.user.id = token.sub;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
 });
