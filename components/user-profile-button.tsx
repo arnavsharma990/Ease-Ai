@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -13,22 +13,22 @@ import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 
 export function UserProfileButton() {
-  const { data: session, status } = useSession();
+  const { user, loading, signIn, signOut } = useAuth();
 
-  if (status === "loading") {
+  if (loading) {
     return <Button variant="ghost" size="sm">Loading...</Button>;
   }
 
-  if (status === "unauthenticated" || !session) {
+  if (!user) {
     return (
-      <Button variant="default" size="sm" onClick={() => signIn("google")}>
+      <Button variant="default" size="sm" onClick={signIn}>
         Sign In
       </Button>
     );
   }
 
-  const userImage = session.user?.image ?? "";
-  const userName = session.user?.name ?? "";
+  const userImage = user.photoURL ?? "";
+  const userName = user.displayName ?? "";
   const userInitial = userName ? userName[0] : "U";
 
   return (
@@ -54,7 +54,7 @@ export function UserProfileButton() {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => signOut()} className="flex items-center text-red-600">
+        <DropdownMenuItem onClick={signOut} className="flex items-center text-red-600">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
