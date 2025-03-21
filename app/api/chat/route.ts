@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { MENTAL_HEALTH_SYSTEM_PROMPT } from '@/lib/openai';
+import { MENTAL_HEALTH_SYSTEM_PROMPT, Message } from '@/lib/chat-config';
 import { headers } from 'next/headers';
 
 // Set the runtime to edge for best performance
@@ -47,8 +47,7 @@ function getMockResponse(prompt: string) {
 export async function POST(req: Request) {
   try {
     // Check authentication
-    const headersList = headers();
-    const authHeader = headersList.get('authorization');
+    const authHeader = headers().get('authorization');
     
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -57,12 +56,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages } = await req.json();
+    const { message } = await req.json();
 
-    // Add system prompt to the beginning of the conversation
-    const conversationWithSystem = [
+    // Create conversation array with system prompt and user message
+    const messages: Message[] = [
       { role: 'system', content: MENTAL_HEALTH_SYSTEM_PROMPT },
-      ...messages
+      { role: 'user', content: message }
     ];
 
     try {
@@ -81,9 +80,9 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           model: 'openai/gpt-4',
-          messages: conversationWithSystem,
+          messages: messages,
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 150, // Reduced for shorter responses
         }),
       });
 
@@ -93,7 +92,7 @@ export async function POST(req: Request) {
       }
 
       const data = await response.json();
-      return NextResponse.json({ response: data.choices[0].message.content });
+      return NextResponse.json({ message: data.choices[0].message.content });
     } catch (error: any) {
       console.error('Error in chat route:', error);
       
