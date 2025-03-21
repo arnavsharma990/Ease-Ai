@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "sukoonai",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -47,11 +47,13 @@
     "cmdk": "1.0.4",
     "date-fns": "latest",
     "embla-carousel-react": "8.5.1",
+    "firebase": "10.8.0",
+    "@firebase/app": "0.9.29",
+    "@firebase/auth": "1.6.2",
     "framer-motion": "^12.5.0",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "15.1.0",
-    "next-auth": "^4.24.11",
     "next-themes": "latest",
     "openai": "^4.87.4",
     "react": "^19",
