@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { PenLine, Save, Trash2, CalendarIcon, AlertCircle } from "lucide-react"
 import { format } from "date-fns"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { cn } from "@/lib/utils"
 
 type JournalEntry = {
   id: string
@@ -168,28 +169,54 @@ export function Journal() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
-              className="rounded-md border shadow p-3 bg-white dark:bg-slate-800"
-              modifiers={{
-                highlighted: (date) => {
-                  const dateStr = format(date, "yyyy-MM-dd")
-                  return entries.some((entry) => {
-                    const entryDate = format(new Date(entry.date), "yyyy-MM-dd")
-                    return entryDate === dateStr
-                  })
-                },
-              }}
-              modifiersStyles={{
-                highlighted: {
-                  backgroundColor: "rgba(167, 139, 250, 0.25)",
-                  borderRadius: "100%",
-                },
-              }}
-            />
+          <div className="space-y-6">
+            <div className="flex flex-col items-center w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-purple-100 dark:border-gray-700 p-4 shadow-lg">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                className="rounded-xl w-full max-w-[350px]"
+                modifiers={{
+                  highlighted: (date) => {
+                    const dateStr = format(date, "yyyy-MM-dd")
+                    return entries.some((entry) => {
+                      const entryDate = format(new Date(entry.date), "yyyy-MM-dd")
+                      return entryDate === dateStr
+                    })
+                  },
+                }}
+                modifiersStyles={{
+                  highlighted: {
+                    backgroundColor: "rgba(167, 139, 250, 0.25)",
+                    borderRadius: "100%",
+                  },
+                }}
+                classNames={{
+                  months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                  month: "space-y-4 w-full",
+                  caption: "flex justify-center pt-1 relative items-center",
+                  caption_label: "text-base font-medium",
+                  nav: "space-x-1 flex items-center",
+                  nav_button: cn(
+                    "h-7 w-7 bg-transparent p-0 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-full transition-colors",
+                    "text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+                  ),
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse space-y-1",
+                  head_row: "flex w-full justify-between",
+                  head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] uppercase",
+                  row: "flex w-full mt-2 justify-between",
+                  cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-transparent",
+                  day: "h-9 w-9 p-0 font-normal",
+                  day_selected: "bg-transparent text-purple-600 dark:text-purple-400 font-bold",
+                  day_today: "bg-transparent text-purple-600 dark:text-purple-400 font-bold",
+                  day_outside: "opacity-50 cursor-default",
+                  day_disabled: "text-muted-foreground opacity-50",
+                  day_hidden: "invisible",
+                }}
+              />
+            </div>
 
             <div className="mt-6">
               <h3 className="font-medium mb-2">Recent Entries</h3>

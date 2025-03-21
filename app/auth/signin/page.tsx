@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (user) {
-      router.push('/chat')
+      router.back()
     }
   }, [user, router])
 

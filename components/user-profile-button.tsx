@@ -7,9 +7,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export function UserProfileButton() {
@@ -49,14 +50,15 @@ export function UserProfileButton() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="flex items-center">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+          <Link href="/subscription" className="flex items-center">
+            <Sparkles className="mr-2 h-4 w-4" />
+            <span>Subscription</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut} className="flex items-center text-red-600">
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

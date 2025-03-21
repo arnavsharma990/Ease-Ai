@@ -9,38 +9,38 @@ import Link from "next/link"
 
 const crisisResources = [
   {
-    name: "988 Suicide & Crisis Lifeline",
-    description: "24/7, free and confidential support for people in distress",
-    phone: "988",
-    website: "https://988lifeline.org",
+    name: "NIMHANS Mental Health Helpline",
+    description: "24/7 toll-free mental health helpline by National Institute of Mental Health and Neurosciences",
+    phone: "080-4611 0007",
+    website: "https://nimhans.ac.in",
     urgent: true
   },
   {
-    name: "Crisis Text Line",
-    description: "Text HOME to 741741 to connect with a Crisis Counselor",
-    phone: "Text HOME to 741741",
-    website: "https://www.crisistextline.org",
+    name: "iCall Psychosocial Helpline",
+    description: "Free counseling service by TISS (Mon-Sat, 8 AM to 10 PM IST)",
+    phone: "022-25521111",
+    website: "https://icallhelpline.org",
     urgent: true
   },
   {
-    name: "SAMHSA National Helpline",
-    description: "Treatment referral and information service (English and Spanish)",
-    phone: "1-800-662-4357",
-    website: "https://www.samhsa.gov/find-help/national-helpline",
+    name: "Vandrevala Foundation",
+    description: "24/7 helpline for emotional crisis and distress",
+    phone: "1860-2662-345",
+    website: "https://www.vandrevalafoundation.com",
     urgent: false
   },
   {
-    name: "Veterans Crisis Line",
-    description: "For veterans and their loved ones",
-    phone: "988, Press 1",
-    website: "https://www.veteranscrisisline.net",
+    name: "AASRA",
+    description: "24/7 helpline for those feeling suicidal or in emotional distress",
+    phone: "91-9820466726",
+    website: "http://www.aasra.info",
     urgent: false
   },
   {
-    name: "The Trevor Project",
-    description: "Crisis intervention for LGBTQ young people",
-    phone: "1-866-488-7386",
-    website: "https://www.thetrevorproject.org",
+    name: "Sneha India",
+    description: "Suicide prevention organization (24/7 helpline)",
+    phone: "044-24640050",
+    website: "https://snehaindia.org",
     urgent: false
   }
 ]
@@ -58,21 +58,21 @@ export default function UrgentSupportPage() {
           <CardHeader>
             <CardTitle className="text-red-700 dark:text-red-400">Need immediate help?</CardTitle>
             <CardDescription className="text-red-600/90 dark:text-red-300/90">
-              If you or someone you know is in immediate danger, please call emergency services.
+              If you or someone you know is in immediate danger, please call emergency services immediately.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-red-700 dark:text-red-400">
             <div className="flex flex-col md:flex-row gap-4">
               <Button size="lg" variant="destructive" className="gap-2" asChild>
-                <a href="tel:911">
+                <a href="tel:112">
                   <Phone className="h-4 w-4" />
-                  Call 911 (US) / 999 (UK)
+                  Call 112 (Emergency Services)
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="border-red-300 text-red-700 gap-2" asChild>
-                <a href="tel:988">
+                <a href="tel:08046110007">
                   <Phone className="h-4 w-4" />
-                  Call 988 Suicide & Crisis Lifeline
+                  Call NIMHANS Helpline
                 </a>
               </Button>
             </div>
@@ -124,7 +124,7 @@ export default function UrgentSupportPage() {
               <li>Any situation where you feel unsafe</li>
             </ul>
             <p>
-              <strong>You are not alone.</strong> Help is available, and recovery is possible.
+              <strong>You are not alone.</strong> Help is available 24/7, and recovery is possible.
             </p>
           </CardContent>
         </Card>

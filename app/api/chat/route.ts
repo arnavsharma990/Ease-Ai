@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { MENTAL_HEALTH_SYSTEM_PROMPT } from '@/lib/chat-config';
 import { API_CONFIG, validateConfig } from '@/lib/api-config';
 import { headers } from 'next/headers';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Set the runtime to edge for best performance
 export const runtime = "edge"
@@ -12,7 +13,8 @@ export async function POST(req: Request) {
     validateConfig();
 
     // Check authentication
-    const authHeader = headers().get('authorization');
+    const headersList = await headers();
+    const authHeader = headersList.get('authorization');
     
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -24,67 +26,18 @@ export async function POST(req: Request) {
     const { message } = await req.json();
 
     try {
-      console.log('Making request to Gemini API:', {
-        hasApiKey: !!API_CONFIG.GOOGLE_AI_API_KEY,
-        url: API_CONFIG.GEMINI_API_URL
-      });
+      // Initialize Gemini AI
+      const genAI = new GoogleGenerativeAI(API_CONFIG.GOOGLE_AI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: API_CONFIG.MODEL_NAME });
 
-      const response = await fetch(API_CONFIG.GEMINI_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': API_CONFIG.GOOGLE_AI_API_KEY!,
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `${MENTAL_HEALTH_SYSTEM_PROMPT}\n\nUser: ${message}`
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 150,
-            topP: 0.8,
-            topK: 40
-          },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        })
-      });
+      // Prepare the chat prompt
+      const prompt = `${MENTAL_HEALTH_SYSTEM_PROMPT}\n\nUser: ${message}`;
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error('Gemini API error:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData
-        });
-        throw new Error(`API request failed: ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
-      }
+      // Generate response
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
 
-      const data = await response.json();
-      const aiResponse = data.candidates[0].content.parts[0].text;
-      return NextResponse.json({ message: aiResponse });
+      return NextResponse.json({ message: response });
     } catch (error: any) {
       console.error('Error in chat route:', error);
       

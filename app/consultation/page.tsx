@@ -1,563 +1,500 @@
-'use client';
+"use client"
 
-import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, Clock, Brain, Heart, Lightbulb, Shield, Users, TrendingUp, Sparkles, HeartHandshake, Lock, GraduationCap, UserCircle } from 'lucide-react';
+import { motion } from "framer-motion"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Brain, Clock, Heart, Shield, UserCircle, Lock, Users, Sparkles, GraduationCap, Diamond, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
 
-interface Consultant {
-  name: string;
-  experience: string;
-  specialty: string;
-}
-
-interface ConsultantMap {
-  'Therapy Session': Consultant[];
-  'Stress Management': Consultant[];
-  'Career Counseling': Consultant[];
-}
-
-interface Service {
-  title: 'Therapy Session' | 'Stress Management' | 'Career Counseling';
-  duration: string;
-  price: string;
-  description: string;
-}
-
-const gradients = {
-  primary: "from-[#8844ee] to-[#4477ff]",
-  warm: "from-[#ff6b6b] to-[#ff4477]",
-  nature: "from-[#34d399] to-[#3b82f6]",
-  sunset: "from-[#f59e0b] to-[#ef4444]",
-  ocean: "from-[#0ea5e9] to-[#6366f1]"
-};
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.2
-    }
+const consultationTypes = [
+  {
+    id: "therapy",
+    title: "Therapy Session",
+    description: "One-on-one session with a therapist to address mental health concerns.",
+    icon: <UserCircle className="w-6 h-6" />,
+    duration: "50 minutes",
+    price: "₹1,500",
+    color: "from-purple-500 to-violet-500"
+  },
+  {
+    id: "stress",
+    title: "Stress Management",
+    description: "Learn techniques to manage stress and improve overall wellbeing.",
+    icon: <Brain className="w-6 h-6" />,
+    duration: "45 minutes",
+    price: "₹1,200",
+    color: "from-pink-500 to-rose-500"
+  },
+  {
+    id: "mental",
+    title: "Mental Exercises",
+    description: "Session for mental health related exercises and guidance.",
+    icon: <GraduationCap className="w-6 h-6" />,
+    duration: "60 minutes",
+    price: "₹1,800",
+    color: "from-blue-500 to-cyan-500"
   }
-};
+]
 
-export default function ConsultationPage() {
-  const [expandedService, setExpandedService] = useState<string | null>(null);
+const approachCards = [
+  {
+    title: "Evidence-Based Approach 🧠",
+    description: "Our therapeutic methods are grounded in scientific research and proven techniques.",
+    icon: <Brain className="w-6 h-6" />,
+    color: "bg-purple-100 dark:bg-purple-900/20"
+  },
+  {
+    title: "Compassionate Care ❤️",
+    description: "We create a safe, non-judgmental space for your journey to wellness.",
+    icon: <Heart className="w-6 h-6" />,
+    color: "bg-pink-100 dark:bg-pink-900/20"
+  },
+  {
+    title: "Holistic Perspective ⭐",
+    description: "We consider all aspects of your life for comprehensive care.",
+    icon: <Diamond className="w-6 h-6" />,
+    color: "bg-blue-100 dark:bg-blue-900/20"
+  }
+]
 
-  const consultants: ConsultantMap = {
-    'Therapy Session': [
-      {
-        name: "Dr. Priya Sharma",
-        experience: "10+ years",
-        specialty: "Anxiety & Depression",
-      },
-      {
-        name: "Dr. Rahul Mehta",
-        experience: "8+ years",
-        specialty: "Trauma & PTSD",
-      },
-      {
-        name: "Dr. Ananya Patel",
-        experience: "12+ years",
-        specialty: "Relationship Issues",
-      },
-    ],
-    'Stress Management': [
-      {
-        name: "Dr. Vikram Singh",
-        experience: "9+ years",
-        specialty: "Work-related Stress",
-      },
-      {
-        name: "Dr. Meera Kapoor",
-        experience: "7+ years",
-        specialty: "Mindfulness & Meditation",
-      },
-      {
-        name: "Dr. Arjun Reddy",
-        experience: "11+ years",
-        specialty: "Burnout Prevention",
-      },
-    ],
-    'Career Counseling': [
-      {
-        name: "Dr. Neha Gupta",
-        experience: "15+ years",
-        specialty: "Career Transitions",
-      },
-      {
-        name: "Dr. Karan Malhotra",
-        experience: "10+ years",
-        specialty: "Professional Development",
-      },
-      {
-        name: "Dr. Sonia Joshi",
-        experience: "8+ years",
-        specialty: "Work-Life Balance",
-      },
-    ],
-  };
+const valueCards = [
+  {
+    title: "Confidentiality",
+    description: "Your privacy is paramount. All information shared remains strictly confidential.",
+    icon: <Lock className="w-6 h-6" />,
+    color: "bg-purple-100 dark:bg-purple-900/20"
+  },
+  {
+    title: "Respect",
+    description: "We honor your unique experiences, beliefs, and cultural background.",
+    icon: <Users className="w-6 h-6" />,
+    color: "bg-pink-100 dark:bg-pink-900/20"
+  },
+  {
+    title: "Empowerment",
+    description: "Equipping you with tools and insights for life's challenges.",
+    icon: <Sparkles className="w-6 h-6" />,
+    color: "bg-blue-100 dark:bg-blue-900/20"
+  }
+]
 
-  const testimonials = [
-    {
-      quote: "Sukoon Consultancy has been instrumental in my journey towards better mental health. The counselors are empathetic and skilled.",
-      author: "Aisha K.",
-      duration: "Client for 6 months"
-    },
-    {
-      quote: "The stress management sessions have given me tools to handle work pressure effectively. I'm more productive and happier now.",
-      author: "Rahul J.",
-      duration: "Client for 3 months"
-    },
-    {
-      quote: "The career counseling session helped me identify my strengths and make informed decisions. I'm now in a job I truly enjoy.",
-      author: "Sanya P.",
-      duration: "Client for 1 year"
-    }
-  ];
+const testimonials = [
+  {
+    quote: "Sukoon Consultancy has been instrumental in my journey towards better mental health. The counselors are empathetic and skilled.",
+    author: "Aisha K.",
+    duration: "Client for 6 months",
+    initials: "AK",
+    color: "bg-purple-500"
+  },
+  {
+    quote: "The stress management sessions have given me tools to handle work pressure effectively. I'm more productive and happier now.",
+    author: "Rahul J.",
+    duration: "Client for 3 months",
+    initials: "RJ",
+    color: "bg-pink-500"
+  },
+  {
+    quote: "The career counseling session helped me identify my strengths and make informed decisions. I'm now in a job I truly enjoy.",
+    author: "Sanya P.",
+    duration: "Client for 1 year",
+    initials: "SP",
+    color: "bg-blue-500"
+  }
+]
 
-  const services: Service[] = [
-    {
-      title: "Therapy Session",
-      duration: "50 minutes",
-      price: "₹1,500",
-      description: "One-on-one session with a therapist to address mental health concerns."
-    },
-    {
-      title: "Stress Management",
-      duration: "45 minutes",
-      price: "₹1,200",
-      description: "Learn techniques to manage stress and improve overall wellbeing."
-    },
-    {
-      title: "Career Counseling",
-      duration: "60 minutes",
-      price: "₹1,800",
-      description: "Guidance on career decisions, job satisfaction, and professional growth."
-    }
-  ] as const;
+const WhyChooseCard = ({ icon, title, description, linkText, linkColor }: {
+  icon: React.ReactNode
+  title: string
+  description: string
+  linkText: string
+  linkColor: string
+}) => {
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-16">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="space-y-16"
-      >
-        {/* Hero Section */}
-        <section className="text-center space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#ff6b6b] to-[#ff4477] bg-clip-text text-transparent">
-            Your Journey to Mental Wellbeing Starts Here
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            At Sukoon Consultancy, we provide expert mental health support in a safe, confidential environment. Our team of professionals is dedicated to helping you navigate life's challenges with confidence and peace of mind.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button className="bg-gradient-to-r from-[#ff6b6b] to-[#ff4477] hover:opacity-90 text-white border-0" size="lg">
-              Book a Consultation
-            </Button>
-            <Button className="border-[#ff4477] text-[#ff4477] hover:bg-[#ff4477] hover:text-white" size="lg" variant="outline">
-              Learn More
-            </Button>
-          </div>
-        </section>
-
-        {/* Book Your Consultation */}
-        <section className="space-y-8">
-          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-[#34d399] to-[#3b82f6] bg-clip-text text-transparent">
-            Book Your Consultation
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <div 
-                key={service.title} 
-                className="bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8 hover:shadow-[0_4px_20px_rgba(136,68,238,0.15)] transition-shadow duration-300"
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded-full bg-[#8844ee]/10 flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-[#8844ee]" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-[#8844ee]">{service.title}</h3>
-                </div>
-
-                <p className="text-gray-500 dark:text-gray-300 mb-4 min-h-[60px]">{service.description}</p>
-                
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300 mb-6">
-                  <span className="text-sm">Duration: {service.duration}</span>
-                </div>
-
-                <p className="text-2xl font-bold mb-6 text-[#8844ee]">{service.price}</p>
-                
-                <button
-                  onClick={() => setExpandedService(expandedService === service.title ? null : service.title)}
-                  className="w-full flex items-center justify-between bg-[#8844ee] hover:bg-[#7733dd] text-white px-6 py-3 rounded-[10px] transition-colors"
-                >
-                  <span>View Consultants</span>
-                  {expandedService === service.title ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </button>
-
-                {expandedService === service.title && (
-                  <div className="mt-6 space-y-4">
-                    {consultants[service.title].map((consultant, index) => (
-                      <div
-                        key={consultant.name}
-                        className="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-[10px]"
-                      >
-                        <h4 className="font-semibold text-[#8844ee] mb-2">{consultant.name}</h4>
-                        <div className="space-y-1 mb-4">
-                          <p className="text-sm text-gray-500 dark:text-gray-300">
-                            Experience: {consultant.experience}
-                          </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-300">
-                            Specialty: {consultant.specialty}
-                          </p>
-                        </div>
-                        <button className="w-full bg-[#4477ff] hover:bg-[#3366ee] text-white px-6 py-2 rounded-[10px] text-sm transition-colors">
-                          Book Now
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Our Approach Section */}
-        <section className="space-y-8 py-12">
+    <motion.div
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="cursor-pointer"
+    >
+      <Card className="border-none transition-all duration-300 hover:shadow-lg">
+        <CardHeader>
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center space-y-4 max-w-3xl mx-auto"
+            className="flex flex-col items-center text-center gap-4"
+            animate={{ 
+              gap: isHovered ? "1rem" : "0.5rem",
+              marginBottom: isHovered ? "1rem" : "0"
+            }}
           >
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#f59e0b] to-[#ef4444] bg-clip-text text-transparent">
-              Our Approach
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              We believe in a holistic approach to mental health that addresses your unique needs.
-            </p>
+            <motion.div 
+              className={`w-16 h-16 rounded-full bg-${linkColor}-100 dark:bg-${linkColor}-900/20 flex items-center justify-center`}
+              animate={{ 
+                scale: isHovered ? 0.9 : 1,
+                marginBottom: isHovered ? "0.5rem" : "0"
+              }}
+            >
+              {icon}
+            </motion.div>
+            <CardTitle className="transition-all duration-300">
+              {title}
+            </CardTitle>
           </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ 
+              opacity: isHovered ? 1 : 0,
+              height: isHovered ? "auto" : 0,
+              marginTop: isHovered ? "1rem" : "0"
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            <CardDescription className="text-center">
+              {description}
+            </CardDescription>
+            <Button variant="link" className={`text-${linkColor}-500 p-0 h-auto mt-4 mx-auto block`}>
+              {linkText}
+            </Button>
+          </motion.div>
+        </CardHeader>
+      </Card>
+    </motion.div>
+  )
+}
 
-          <div className="bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-8"
-            >
-              <h3 className="text-2xl font-semibold text-[#8844ee] mb-4">Our Mission & Approach</h3>
-              <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                At Sukoon Consultancy, we believe in a holistic approach to mental health that combines evidence-based practices with compassionate care.
-              </p>
-            </motion.div>
+const TestimonialCard = ({ quote, author, duration, initials, color }: {
+  quote: string
+  author: string
+  duration: string
+  initials: string
+  color: string
+}) => {
+  return (
+    <Card className="w-[400px] flex-shrink-0 border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          <p className="text-muted-foreground">{quote}</p>
+          <div className="flex items-center gap-4">
+            <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white`}>
+              {initials}
+            </div>
+            <div>
+              <p className="font-semibold">{author}</p>
+              <p className="text-sm text-muted-foreground">{duration}</p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
-            <motion.div 
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
-              className="grid md:grid-cols-3 gap-6"
-            >
-              <motion.div
-                variants={fadeInUp}
-                className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 hover:shadow-[0_4px_20px_rgba(136,68,238,0.2)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-full bg-[#8844ee]/10 flex items-center justify-center mb-4 group-hover:bg-[#8844ee]/20 transition-colors">
-                  <Brain className="w-6 h-6 text-[#8844ee]" />
-                </div>
-                <h4 className="text-lg font-semibold text-[#8844ee] mb-3">Evidence-Based Approach 🧠</h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Our therapeutic methods are grounded in scientific research and proven techniques.
-                </p>
-              </motion.div>
+export default function ConsultationPage() {
+  const [approachIndex, setApproachIndex] = useState(0)
+  const [valuesIndex, setValuesIndex] = useState(0)
+  const [testimonialOffset, setTestimonialOffset] = useState(0)
+  const SLIDE_INTERVAL = 5000 // 5 seconds
 
-              <motion.div
-                variants={fadeInUp}
-                className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 hover:shadow-[0_4px_20px_rgba(255,68,119,0.2)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-full bg-[#ff4477]/10 flex items-center justify-center mb-4 group-hover:bg-[#ff4477]/20 transition-colors">
-                  <Heart className="w-6 h-6 text-[#ff4477]" />
-                </div>
-                <h4 className="text-lg font-semibold text-[#ff4477] mb-3">Compassionate Care ❤️</h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  We create a safe, non-judgmental space for your journey to wellness.
-                </p>
-              </motion.div>
+  const nextApproach = () => {
+    setApproachIndex((prev) => (prev + 1) % approachCards.length)
+  }
 
-              <motion.div
-                variants={fadeInUp}
-                className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 hover:shadow-[0_4px_20px_rgba(68,119,255,0.2)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-full bg-[#4477ff]/10 flex items-center justify-center mb-4 group-hover:bg-[#4477ff]/20 transition-colors">
-                  <Lightbulb className="w-6 h-6 text-[#4477ff]" />
-                </div>
-                <h4 className="text-lg font-semibold text-[#4477ff] mb-3">Holistic Perspective 🌟</h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  We consider all aspects of your life for comprehensive care.
-                </p>
-              </motion.div>
-            </motion.div>
+  const prevApproach = () => {
+    setApproachIndex((prev) => (prev - 1 + approachCards.length) % approachCards.length)
+  }
 
+  const nextValue = () => {
+    setValuesIndex((prev) => (prev + 1) % valueCards.length)
+  }
+
+  const prevValue = () => {
+    setValuesIndex((prev) => (prev - 1 + valueCards.length) % valueCards.length)
+  }
+
+  const handleTestimonialSlide = (direction: 'prev' | 'next') => {
+    const cardWidth = 400 // Width of each testimonial card + gap
+    const maxOffset = -(testimonials.length - 1) * cardWidth
+    
+    if (direction === 'next') {
+      setTestimonialOffset(prev => Math.max(prev - cardWidth, maxOffset))
+    } else {
+      setTestimonialOffset(prev => Math.min(prev + cardWidth, 0))
+    }
+  }
+
+  // Auto-advance slides
+  useEffect(() => {
+    const approachTimer = setInterval(nextApproach, SLIDE_INTERVAL)
+    const valuesTimer = setInterval(nextValue, SLIDE_INTERVAL)
+
+    return () => {
+      clearInterval(approachTimer)
+      clearInterval(valuesTimer)
+    }
+  }, []) // Empty dependency array means this only runs once on mount
+
+  return (
+    <div className="container max-w-6xl py-10 space-y-20">
+      {/* Hero Section */}
+      <section className="text-center space-y-6">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-pink-500 to-rose-500 text-transparent bg-clip-text">
+          Your Journey to Mental Wellbeing Starts Here
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          At Sukoon Consultancy, we provide expert mental health support in a safe, confidential environment. 
+          Our team of professionals is dedicated to helping you navigate life's challenges with confidence and peace of mind.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <Button 
+            size="lg" 
+            className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+            onClick={() => window.location.href = "/consultation/book"}
+          >
+            Book a Consultation
+          </Button>
+          <Button size="lg" variant="outline">
+            Learn More
+          </Button>
+        </div>
+      </section>
+
+      {/* Consultation Types */}
+      <section className="space-y-10">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-4">Book Your Consultation</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {consultationTypes.map((type) => (
             <motion.div
+              key={type.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="mt-12"
+              transition={{ duration: 0.3 }}
             >
-              <h4 className="text-xl font-semibold text-[#8844ee] mb-8 text-center">Our Values</h4>
-              <motion.div 
-                variants={staggerContainer}
-                initial="initial"
-                animate="animate"
-                className="grid md:grid-cols-3 gap-6"
-              >
-                <motion.div
-                  variants={fadeInUp}
-                  className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 hover:shadow-[0_4px_20px_rgba(136,68,238,0.2)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#8844ee]/10 flex items-center justify-center mb-4 group-hover:bg-[#8844ee]/20 transition-colors">
-                    <Shield className="w-6 h-6 text-[#8844ee]" />
+              <Card className="relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+                <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${type.color}`} />
+                <CardHeader>
+                  <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${type.color} text-white mb-3`}>
+                    {type.icon}
                   </div>
-                  <h5 className="text-lg font-semibold text-[#8844ee] mb-2">Confidentiality</h5>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Your privacy is paramount. All information shared remains strictly confidential.
-                  </p>
-                </motion.div>
+                  <CardTitle>{type.title}</CardTitle>
+                  <CardDescription>{type.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center text-sm">
+                      <Clock className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <span>{type.duration}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <Shield className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <span>Secure & Confidential</span>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-6">
+                      <div className="text-2xl font-bold">{type.price}</div>
+                      <Button 
+                        className={`w-full bg-gradient-to-r ${type.color} text-white hover:opacity-90 transition-opacity`}
+                      >
+                        View Consultants
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
 
-                <motion.div
-                  variants={fadeInUp}
-                  className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 hover:shadow-[0_4px_20px_rgba(255,68,119,0.2)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#ff4477]/10 flex items-center justify-center mb-4 group-hover:bg-[#ff4477]/20 transition-colors">
-                    <Users className="w-6 h-6 text-[#ff4477]" />
-                  </div>
-                  <h5 className="text-lg font-semibold text-[#ff4477] mb-2">Respect</h5>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    We honor your unique experiences, beliefs, and cultural background.
-                  </p>
-                </motion.div>
+      {/* Combined Our Approach Section */}
+      <section className="space-y-12 bg-gradient-to-b from-purple-50/50 to-pink-50/50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-3xl p-10">
+        <div className="text-center space-y-4">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+            Our Philosophy
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            We believe in a holistic approach to mental health that combines evidence-based practices with compassionate care.
+          </p>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {/* Approach Slider */}
+          <div className="space-y-6">
+            <h3 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+              Our Approach
+            </h3>
+            <div className="relative">
+              <div className="overflow-hidden rounded-2xl">
                 <motion.div
-                  variants={fadeInUp}
-                  className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 hover:shadow-[0_4px_20px_rgba(68,119,255,0.2)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                  key={approachIndex}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
                 >
-                  <div className="w-12 h-12 rounded-full bg-[#4477ff]/10 flex items-center justify-center mb-4 group-hover:bg-[#4477ff]/20 transition-colors">
-                    <Sparkles className="w-6 h-6 text-[#4477ff]" />
-                  </div>
-                  <h5 className="text-lg font-semibold text-[#4477ff] mb-2">Empowerment</h5>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Equipping you with tools and insights for life's challenges.
-                  </p>
+                  <Card className="border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+                    <CardHeader>
+                      <div className={`w-12 h-12 rounded-full ${approachCards[approachIndex].color} flex items-center justify-center mb-4`}>
+                        {approachCards[approachIndex].icon}
+                      </div>
+                      <CardTitle>{approachCards[approachIndex].title}</CardTitle>
+                      <CardDescription>{approachCards[approachIndex].description}</CardDescription>
+                    </CardHeader>
+                  </Card>
                 </motion.div>
-              </motion.div>
+              </div>
+              <div className="flex justify-between mt-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={prevApproach}
+                  className="rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={nextApproach}
+                  className="rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Values Slider */}
+          <div className="space-y-6">
+            <h3 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+              Our Values
+            </h3>
+            <div className="relative">
+              <div className="overflow-hidden rounded-2xl">
+                <motion.div
+                  key={valuesIndex}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                >
+                  <Card className="border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+                    <CardHeader>
+                      <div className={`w-12 h-12 rounded-full ${valueCards[valuesIndex].color} flex items-center justify-center mb-4`}>
+                        {valueCards[valuesIndex].icon}
+                      </div>
+                      <CardTitle>{valueCards[valuesIndex].title}</CardTitle>
+                      <CardDescription>{valueCards[valuesIndex].description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+              </div>
+              <div className="flex justify-between mt-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={prevValue}
+                  className="rounded-full hover:bg-pink-100 dark:hover:bg-pink-900/20"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={nextValue}
+                  className="rounded-full hover:bg-pink-100 dark:hover:bg-pink-900/20"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="space-y-10">
+        <div className="text-center space-y-4">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 text-transparent bg-clip-text">
+            Why Choose Sukoon Consultancy
+          </h2>
+          <p className="text-muted-foreground">
+            Experience the difference with our comprehensive mental health care approach
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <WhyChooseCard
+            icon={<Lock className="w-8 h-8" />}
+            title="Confidentiality Assured"
+            description="Your privacy is our priority. All sessions and information shared remain strictly confidential, protected by our secure systems and ethical practices."
+            linkText="Learn More"
+            linkColor="pink"
+          />
+          <WhyChooseCard
+            icon={<GraduationCap className="w-8 h-8" />}
+            title="Expert Counselors"
+            description="Our team consists of certified professionals with extensive experience across various mental health domains, ensuring expert care."
+            linkText="Meet Our Team"
+            linkColor="emerald"
+          />
+          <WhyChooseCard
+            icon={<Diamond className="w-8 h-8" />}
+            title="Personalized Care"
+            description="We tailor our approach to your unique needs, ensuring effective and personalized support throughout your wellness journey."
+            linkText="Discover More"
+            linkColor="blue"
+          />
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <div className="mt-20">
+        <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          What Our Clients Say
+        </h2>
+        <div className="relative">
+          <div className="flex overflow-hidden">
+            <motion.div
+              className="flex gap-6"
+              animate={{ x: testimonialOffset }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              {testimonials.map((testimonial, index) => (
+                <TestimonialCard key={index} {...testimonial} />
+              ))}
             </motion.div>
           </div>
-        </section>
-
-        {/* Why Choose Sukoon Consultancy */}
-        <section className="space-y-8 py-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center space-y-4 max-w-3xl mx-auto"
+          <button
+            onClick={() => handleTestimonialSlide('prev')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-slate-800 transition-all"
+            aria-label="Previous testimonial"
           >
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#6366f1] bg-clip-text text-transparent">
-              Why Choose Sukoon Consultancy
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Experience the difference with our comprehensive mental health care approach
-            </p>
-          </motion.div>
-
-          <motion.div 
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => handleTestimonialSlide('next')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-slate-800 transition-all"
+            aria-label="Next testimonial"
           >
-            <motion.div
-              variants={fadeInUp}
-              className="group relative bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8 hover:shadow-[0_4px_20px_rgba(244,107,107,0.15)] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#ff6b6b]/10 to-transparent rounded-bl-[100px] transition-all duration-300 group-hover:scale-110" />
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-[#ff6b6b]/10 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:rotate-6">
-                  <Lock className="w-7 h-7 text-[#ff6b6b]" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-[#ff6b6b]">Confidentiality Assured</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Your privacy is our priority. All sessions and information shared remain strictly confidential, protected by our secure systems and ethical practices.
-                </p>
-                <div className="mt-6 flex items-center text-[#ff6b6b] font-medium">
-                  <span className="text-sm group-hover:translate-x-2 transition-transform duration-300">Learn More</span>
-                </div>
-              </div>
-            </motion.div>
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
 
-            <motion.div
-              variants={fadeInUp}
-              className="group relative bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8 hover:shadow-[0_4px_20px_rgba(52,211,153,0.15)] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#34d399]/10 to-transparent rounded-bl-[100px] transition-all duration-300 group-hover:scale-110" />
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:rotate-6">
-                  <GraduationCap className="w-7 h-7 text-[#34d399]" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-[#34d399]">Expert Counselors</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Our team consists of certified professionals with extensive experience across various mental health domains, ensuring expert care.
-                </p>
-                <div className="mt-6 flex items-center text-[#34d399] font-medium">
-                  <span className="text-sm group-hover:translate-x-2 transition-transform duration-300">Meet Our Team</span>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              className="group relative bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8 hover:shadow-[0_4px_20px_rgba(14,165,233,0.15)] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#0ea5e9]/10 to-transparent rounded-bl-[100px] transition-all duration-300 group-hover:scale-110" />
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-[#0ea5e9]/10 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:rotate-6">
-                  <HeartHandshake className="w-7 h-7 text-[#0ea5e9]" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-[#0ea5e9]">Personalized Care</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  We tailor our approach to your unique needs, ensuring effective and personalized support throughout your wellness journey.
-                </p>
-                <div className="mt-6 flex items-center text-[#0ea5e9] font-medium">
-                  <span className="text-sm group-hover:translate-x-2 transition-transform duration-300">Discover More</span>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div 
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
-          >
-            <motion.div
-              variants={fadeInUp}
-              className="group flex items-center gap-4 bg-white/50 dark:bg-gray-800/50 rounded-[15px] p-4 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-full bg-[#8844ee]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Shield className="w-6 h-6 text-[#8844ee]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[#8844ee]">Safe Space</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Judgment-free environment</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              className="group flex items-center gap-4 bg-white/50 dark:bg-gray-800/50 rounded-[15px] p-4 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-full bg-[#ff4477]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Users className="w-6 h-6 text-[#ff4477]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[#ff4477]">Community Support</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Connect with others</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              className="group flex items-center gap-4 bg-white/50 dark:bg-gray-800/50 rounded-[15px] p-4 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-full bg-[#4477ff]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <UserCircle className="w-6 h-6 text-[#4477ff]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[#4477ff]">24/7 Support</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Always here for you</p>
-              </div>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        {/* What Our Clients Say */}
-        <section className="space-y-8 py-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center space-y-4 max-w-3xl mx-auto"
-          >
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#f59e0b] to-[#ef4444] bg-clip-text text-transparent">
-              What Our Clients Say
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Hear from those who have experienced positive changes through our services.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
-          >
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                variants={fadeInUp}
-                className="group bg-white dark:bg-gray-800 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8 hover:shadow-[0_4px_20px_rgba(136,68,238,0.15)] transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="space-y-6">
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    "{testimonial.quote}"
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8844ee] to-[#4477ff] flex items-center justify-center text-white font-semibold text-lg">
-                      {testimonial.author.split(' ')[0][0]}{testimonial.author.split(' ')[1][0]}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-[#8844ee] group-hover:text-[#7733dd] transition-colors">
-                        {testimonial.author}
-                      </h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {testimonial.duration}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="text-center space-y-6">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#ff6b6b] to-[#ff4477] bg-clip-text text-transparent">
-            Ready to Begin Your Journey?
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Take the first step towards better mental health today. Our team is ready to support you.
-          </p>
-          <Button className="bg-gradient-to-r from-[#ff6b6b] to-[#ff4477] hover:opacity-90 text-white border-0" size="lg">
-            Book a Consultation Now
-          </Button>
-        </section>
-      </motion.div>
+      {/* CTA Section */}
+      <section className="text-center space-y-6">
+        <h2 className="text-3xl font-bold">Ready to Begin Your Journey?</h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Take the first step towards better mental health today. Our team is ready to support you.
+        </p>
+        <Button 
+          size="lg"
+          className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+          onClick={() => window.location.href = "/consultation/book"}
+        >
+          Book a Consultation Now
+        </Button>
+      </section>
     </div>
-  );
+  )
 } 
