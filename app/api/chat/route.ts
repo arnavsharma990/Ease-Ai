@@ -67,8 +67,18 @@ export async function POST(req: Request) {
     try {
       // Check if API key is available
       if (!OPENROUTER_API_KEY) {
+        console.error('OpenRouter API key is missing');
         throw new Error('Missing OPENROUTER_API_KEY');
       }
+
+      // Log the request configuration (without the full API key)
+      console.log('Making request to OpenRouter with config:', {
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        hasApiKey: !!OPENROUTER_API_KEY,
+        apiKeyPrefix: OPENROUTER_API_KEY?.substring(0, 10) + '...',
+        siteUrl: SITE_URL,
+        siteName: SITE_NAME
+      });
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -88,6 +98,11 @@ export async function POST(req: Request) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        console.error('OpenRouter API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        });
         throw new Error(`API request failed: ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
       }
 
