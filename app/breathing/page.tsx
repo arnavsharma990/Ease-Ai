@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect } from "react"
-import { FeatureLayout } from "@/components/feature-layout"
-import { BreathingExercise } from "@/components/breathing-exercise"
+import { FeatureLayout } from "../../components/feature-layout"
+import { BreathingExercise } from "../../components/breathing-exercise"
 
 export default function BreathingPage() {
   useEffect(() => {

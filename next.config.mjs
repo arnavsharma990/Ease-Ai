@@ -19,7 +19,18 @@ const nextConfig = {
     parallelServerCompiles: true,
   },
   images: {
-    domains: ['hebbkx1anhila5yf.public.blob.vercel-storage.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      "aws-crt": false,
+    }
+    return config
   },
 }
 

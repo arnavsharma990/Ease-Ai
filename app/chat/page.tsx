@@ -1,13 +1,12 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { Chat } from "@/components/chat"
-import { Button } from "@/components/ui/button"
-import { signIn } from "next-auth/react"
+import { useSession, signIn } from "next-auth/react"
+import { Chat } from "../../components/chat"
+import { Button } from "../../components/ui/button"
+import { Card } from "../../components/ui/card"
+import { BackgroundGradient } from "../../components/ui/background-gradient"
 import { Brain, Heart, Shield, Sparkles, MessageCircle, Lock, Star, Users, ArrowRight } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { BackgroundGradient } from "@/components/ui/background-gradient"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function ChatPage() {
