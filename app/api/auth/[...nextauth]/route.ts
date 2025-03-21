@@ -1,5 +1,13 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+    } & DefaultSession["user"]
+  }
+}
 
 const handler = NextAuth({
   providers: [
@@ -10,22 +18,13 @@ const handler = NextAuth({
   ],
   pages: {
     signIn: "/auth/signin",
-    error: "/auth/error",
-    signOut: "/auth/signout",
   },
   callbacks: {
     async session({ session, token }) {
       if (session?.user) {
-        session.user.id = token.sub;
+        session.user.id = token.sub!;
       }
       return session;
-    },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
     },
   },
 });
