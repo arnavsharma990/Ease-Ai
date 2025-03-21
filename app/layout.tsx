@@ -1,7 +1,7 @@
 import "@/styles/globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import { AuthProvider } from "@/components/auth-provider"
+import { AuthProvider } from "@/contexts/AuthContext"
 import { UserProfileButton } from "@/components/user-profile-button"
 import { ModeToggle } from "@/components/mode-toggle"
 import Image from "next/image"
@@ -22,8 +22,8 @@ const inter = Inter({
 
 // Add metadata for better SEO and performance hints
 export const metadata: Metadata = {
-  title: "SukoonAI - Mental Health Assistant",
-  description: "Your AI companion for mental wellness support",
+  title: "SukoonAI - Your Mental Wellness Companion",
+  description: "A supportive AI companion for your mental well-being journey",
   icons: {
     icon: '/favicon.ico',
   },
