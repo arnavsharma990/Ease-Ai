@@ -36,26 +36,14 @@ export async function POST(req: Request) {
           'x-goog-api-key': API_CONFIG.GOOGLE_AI_API_KEY!,
         },
         body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: MENTAL_HEALTH_SYSTEM_PROMPT }]
-            },
-            {
-              role: 'model',
-              parts: [{ text: 'I understand. I will follow these guidelines and provide supportive, brief responses.' }]
-            },
-            {
-              role: 'user',
-              parts: [{ text: message }]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 150,
-            topP: 0.8,
-            topK: 40
+          prompt: {
+            text: `${MENTAL_HEALTH_SYSTEM_PROMPT}\n\nUser: ${message}`
           },
+          temperature: 0.7,
+          candidateCount: 1,
+          maxOutputTokens: 150,
+          topP: 0.8,
+          topK: 40,
           safetySettings: [
             {
               category: 'HARM_CATEGORY_HARASSMENT',
@@ -88,7 +76,7 @@ export async function POST(req: Request) {
       }
 
       const data = await response.json();
-      const aiResponse = data.candidates[0].content.parts[0].text;
+      const aiResponse = data.candidates[0].output;
       return NextResponse.json({ message: aiResponse });
     } catch (error: any) {
       console.error('Error in chat route:', error);
