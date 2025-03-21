@@ -113,6 +113,7 @@ export default function PricingSection() {
           <Button 
             size="lg" 
             className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+            onClick={() => alert('Premium subscriptions coming soon!')}
           >
             Get Started Now
           </Button>
