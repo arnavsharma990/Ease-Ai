@@ -113,7 +113,7 @@ export default function RootLayout({
                           asChild
                           className="relative group overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30"
                         >
-                          <Link href="/urgent-support" className="relative z-10">
+                          <Link href="/urgent-support" prefetch className="relative z-10">
                             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-red-500 to-rose-600 group-hover:opacity-90 transition-opacity" />
                             <span className="relative">Urgent Support</span>
                           </Link>
