@@ -23,6 +23,7 @@ export default function Chat() {
   const [input, setInput] = useState("")
   const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING])
   const [isLoading, setIsLoading] = useState(false)
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -30,8 +31,12 @@ export default function Chat() {
   }
 
   useEffect(() => {
+    if (isFirstLoad) {
+      setIsFirstLoad(false)
+      return
+    }
     scrollToBottom()
-  }, [messages])
+  }, [messages, isFirstLoad])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
