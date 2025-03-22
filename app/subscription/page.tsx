@@ -5,6 +5,7 @@ import PremiumFeatures from "@/components/subscription/PremiumFeatures"
 import FAQ from "@/components/subscription/FAQ"
 import Testimonials from "@/components/subscription/Testimonials"
 import { motion } from "framer-motion"
+import { useEffect } from "react"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -21,6 +22,27 @@ const stagger = {
 }
 
 export default function SubscriptionPage() {
+  useEffect(() => {
+    // Add smooth scrolling behavior
+    document.documentElement.style.scrollBehavior = "smooth";
+    
+    // If there's a hash in the URL, scroll to it after a short delay
+    if (window.location.hash) {
+      setTimeout(() => {
+        const element = document.querySelector(window.location.hash);
+        if (element) {
+          // Get the element's position
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+          // Scroll to position with offset
+          window.scrollTo({
+            top: elementPosition - 100, // Offset by 100px to show the header fully
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  }, []);
+
   return (
     <motion.div 
       initial="initial"

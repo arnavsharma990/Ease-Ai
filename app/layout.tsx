@@ -39,6 +39,7 @@ const features = [
   { title: 'Community', href: '/community' },
   { title: 'Resources', href: '/resources' },
   { title: 'Consultation', href: '/consultation' },
+  { title: 'Analytics', href: '/profile/analytics' },
 ]
 
 export default function RootLayout({
