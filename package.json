@@ -49,6 +49,7 @@
     "cmdk": "1.0.4",
     "date-fns": "latest",
     "embla-carousel-react": "8.5.1",
+    "emoji-picker-react": "^4.12.2",
     "firebase": "10.8.0",
     "framer-motion": "^12.5.0",
     "html2canvas": "^1.4.1",

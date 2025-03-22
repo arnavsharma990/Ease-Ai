@@ -128,6 +128,9 @@ importers:
       embla-carousel-react:
         specifier: 8.5.1
         version: 8.5.1(react@19.0.0)
+      emoji-picker-react:
+        specifier: ^4.12.2
+        version: 4.12.2(react@19.0.0)
       firebase:
         specifier: 10.8.0
         version: 10.8.0
@@ -1799,6 +1802,12 @@ packages:
   embla-carousel@8.5.1:
     resolution: {integrity: sha512-JUb5+FOHobSiWQ2EJNaueCNT/cQU9L6XWBbWmorWPQT9bkbk+fhsuLr8wWrzXKagO3oWszBO7MSx+GfaRk4E6A==}
 
+  emoji-picker-react@4.12.2:
+    resolution: {integrity: sha512-6PDYZGlhidt+Kc0ay890IU4HLNfIR7/OxPvcNxw+nJ4HQhMKd8pnGnPn4n2vqC/arRFCNWQhgJP8rpsYKsz0GQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
@@ -1899,6 +1908,9 @@ packages:
 
   firebase@10.8.0:
     resolution: {integrity: sha512-UJpC24vw8JFuHEOQyArBGKTUd7+kohLISCzHyn0M/prP0KOTx2io1eyLliEid330QqnWI7FOlPxoU97qecCSfQ==}
+
+  flairup@1.0.0:
+    resolution: {integrity: sha512-IKlE+pNvL2R+kVL1kEhUYqRxVqeFnjiIvHWDMLFXNaqyUdFXQM2wte44EfMYJNHkW16X991t2Zg8apKkhv7OBA==}
 
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
@@ -4563,6 +4575,11 @@ snapshots:
 
   embla-carousel@8.5.1: {}
 
+  emoji-picker-react@4.12.2(react@19.0.0):
+    dependencies:
+      flairup: 1.0.0
+      react: 19.0.0
+
   emoji-regex@8.0.0: {}
 
   emoji-regex@9.2.2: {}
@@ -4684,6 +4701,8 @@ snapshots:
       '@firebase/util': 1.9.4
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
+
+  flairup@1.0.0: {}
 
   foreground-child@3.3.1:
     dependencies:

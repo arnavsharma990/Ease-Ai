@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
+import EmojiPicker, { Theme } from 'emoji-picker-react'
+import type { EmojiClickData } from 'emoji-picker-react'
 
 type Message = {
   role: 'assistant' | 'user'
@@ -24,7 +26,9 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING])
   const [isLoading, setIsLoading] = useState(false)
   const [isFirstLoad, setIsFirstLoad] = useState(true)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const emojiButtonRef = useRef<HTMLButtonElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -37,6 +41,26 @@ export default function Chat() {
     }
     scrollToBottom()
   }, [messages, isFirstLoad])
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    const cursorPosition = (document.querySelector('input') as HTMLInputElement)?.selectionStart || input.length
+    const textBeforeCursor = input.slice(0, cursorPosition)
+    const textAfterCursor = input.slice(cursorPosition)
+    setInput(textBeforeCursor + emojiData.emoji + textAfterCursor)
+    setShowEmojiPicker(false)
+  }
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showEmojiPicker && emojiButtonRef.current && !emojiButtonRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showEmojiPicker])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,7 +117,7 @@ export default function Chat() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col h-screen max-h-screen bg-gradient-to-br from-purple-50 to-white dark:from-gray-900 dark:to-gray-800"
+      className="flex flex-col h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] bg-gradient-to-br from-purple-50 to-white dark:from-gray-900 dark:to-gray-800"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-purple-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
@@ -199,14 +223,29 @@ export default function Chat() {
           >
             <Paperclip className="h-5 w-5" />
           </Button>
-          <Button 
-            type="button" 
-            variant="ghost" 
-            size="icon"
-            className="hover:bg-purple-100 dark:hover:bg-gray-700"
-          >
-            <SmilePlus className="h-5 w-5" />
-          </Button>
+          <div className="relative">
+            <Button 
+              type="button" 
+              variant="ghost" 
+              size="icon"
+              ref={emojiButtonRef}
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="hover:bg-purple-100 dark:hover:bg-gray-700"
+            >
+              <SmilePlus className="h-5 w-5" />
+            </Button>
+            {showEmojiPicker && (
+              <div className="absolute bottom-full left-0 mb-2 z-50">
+                <EmojiPicker
+                  onEmojiClick={onEmojiClick}
+                  autoFocusSearch={false}
+                  theme={Theme.LIGHT}
+                  height={350}
+                  width={300}
+                />
+              </div>
+            )}
+          </div>
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
