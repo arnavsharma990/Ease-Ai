@@ -176,6 +176,18 @@ export function Community() {
     setGroupMessage("")
   }
 
+  const handleLikePost = (postId: string) => {
+    setPosts(prevPosts => prevPosts.map(post => 
+      post.id === postId ? { ...post, likes: post.likes + 1 } : post
+    ))
+  }
+
+  const handleCommentPost = (postId: string) => {
+    setPosts(prevPosts => prevPosts.map(post => 
+      post.id === postId ? { ...post, comments: post.comments + 1 } : post
+    ))
+  }
+
   return (
     <div className="space-y-8">
       <Card className="rounded-[2rem] overflow-hidden border-none shadow-lg">
@@ -347,14 +359,16 @@ export function Community() {
                               variant="ghost" 
                               size="sm" 
                               className="gap-2 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-colors rounded-full px-6"
+                              onClick={() => handleLikePost(post.id)}
                             >
-                              <Heart className="h-4 w-4" />
+                              <Heart className={`h-4 w-4 ${post.likes > 0 ? 'fill-pink-500 text-pink-500' : ''}`} />
                               {post.likes}
                             </Button>
                             <Button 
                               variant="ghost" 
                               size="sm" 
                               className="gap-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 dark:hover:text-purple-400 transition-colors rounded-full px-6"
+                              onClick={() => handleCommentPost(post.id)}
                             >
                               <MessageCircle className="h-4 w-4" />
                               {post.comments}

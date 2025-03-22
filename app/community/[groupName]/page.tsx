@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Send, Smile, ChevronLeft, Users, LogOut } from "lucide-react"
+import { Send, Smile, ChevronLeft, Users, LogOut, Ghost } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { use } from "react"
+import { Switch } from "@/components/ui/switch"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 type Message = {
   id: string
@@ -95,6 +97,7 @@ export default function GroupChat({ params }: { params: Promise<{ groupName: str
   const router = useRouter()
   const { groupName } = use(params)
   const [message, setMessage] = useState("")
+  const [isGhostMode, setIsGhostMode] = useState(false)
   const [participants, setParticipants] = useState<Participant[]>(mockParticipants)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -126,8 +129,10 @@ export default function GroupChat({ params }: { params: Promise<{ groupName: str
     const newMessage: Message = {
       id: Date.now().toString(),
       author: {
-        name: "You",
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=you`
+        name: isGhostMode ? "Anonymous User" : "You",
+        avatar: isGhostMode 
+          ? `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`
+          : `https://api.dicebear.com/7.x/avataaars/svg?seed=you`
       },
       content: message,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -160,6 +165,23 @@ export default function GroupChat({ params }: { params: Promise<{ groupName: str
             <p className="text-sm text-muted-foreground">{groupInfo.description}</p>
           </div>
         </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/10 px-4 py-2 rounded-full">
+                <Ghost className={`h-4 w-4 ${isGhostMode ? 'text-purple-600' : 'text-gray-400'}`} />
+                <Switch
+                  checked={isGhostMode}
+                  onCheckedChange={setIsGhostMode}
+                  className="data-[state=checked]:bg-purple-600"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Ghost Mode: Chat anonymously</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <div className="grid grid-cols-[300px_1fr] gap-6">
