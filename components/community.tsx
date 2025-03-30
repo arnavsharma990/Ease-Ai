@@ -189,34 +189,34 @@ export function Community() {
   }
 
   return (
-    <div className="space-y-8">
-      <Card className="rounded-[2rem] overflow-hidden border-none shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Community Guidelines</CardTitle>
+    <div className="space-y-4 sm:space-y-8">
+      <Card className="rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border-none shadow-lg">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-xl sm:text-2xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Community Guidelines</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-3">
+        <CardContent className="p-4 sm:p-6">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {guidelines.map((guideline, index) => (
               <motion.div
                 key={guideline.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
-                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                className="flex gap-4 p-6 rounded-[1.5rem] hover:bg-purple-50/80 dark:hover:bg-purple-900/10 transition-all"
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="flex gap-3 sm:gap-4 p-4 sm:p-6 rounded-[1rem] sm:rounded-[1.5rem] hover:bg-purple-50/80 dark:hover:bg-purple-900/10 transition-all"
               >
                 <motion.div 
                   className="flex-shrink-0"
                   whileHover={{ rotate: [0, -10, 10, -10, 0] }}
                   transition={{ duration: 0.5 }}
                 >
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 flex items-center justify-center shadow-inner">
-                    <guideline.icon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 flex items-center justify-center shadow-inner">
+                    <guideline.icon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-400" />
                   </div>
                 </motion.div>
                 <div>
-                  <h3 className="font-medium text-lg">{guideline.title}</h3>
-                  <p className="text-sm text-muted-foreground">{guideline.description}</p>
+                  <h3 className="font-medium text-base sm:text-lg">{guideline.title}</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{guideline.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -226,8 +226,8 @@ export function Community() {
 
       <div className="flex items-center justify-between">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid w-full grid-cols-2 lg:w-[400px] rounded-full p-1 bg-purple-50 dark:bg-purple-900/10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+            <TabsList className="grid w-full sm:w-[400px] grid-cols-2 rounded-full p-1 bg-purple-50 dark:bg-purple-900/10">
               <TabsTrigger value="feed" className="rounded-full data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900">Community Feed</TabsTrigger>
               <TabsTrigger value="groups" className="rounded-full data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900">Support Groups</TabsTrigger>
             </TabsList>
@@ -235,7 +235,7 @@ export function Community() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/10 px-4 py-2 rounded-full">
+                  <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/10 px-3 sm:px-4 py-2 rounded-full">
                     <Ghost className={`h-4 w-4 ${isGhostMode ? 'text-purple-600' : 'text-gray-400'}`} />
                     <Switch
                       checked={isGhostMode}
@@ -251,16 +251,16 @@ export function Community() {
             </TooltipProvider>
           </div>
 
-          <TabsContent value="feed" className="space-y-6">
+          <TabsContent value="feed" className="space-y-4 sm:space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="border-none shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-[2rem]">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <Avatar className="h-10 w-10 border-2 border-purple-100 dark:border-purple-800">
+              <Card className="border-none shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-[1.5rem] sm:rounded-[2rem]">
+                <CardContent className="p-4 sm:pt-6">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-purple-100 dark:border-purple-800">
                       <AvatarImage 
                         src={isGhostMode 
                           ? `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`
@@ -268,7 +268,7 @@ export function Community() {
                       />
                       <AvatarFallback>{isGhostMode ? 'A' : 'Y'}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs sm:text-sm text-muted-foreground">
                       Posting as: <span className="font-medium">{isGhostMode ? 'Anonymous User' : 'You'}</span>
                     </span>
                   </div>
@@ -276,13 +276,13 @@ export function Community() {
                     placeholder="Share your thoughts, experiences, or ask for support..."
                     value={newPost}
                     onChange={(e) => setNewPost(e.target.value)}
-                    className="mb-4 min-h-[100px] bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-purple-100 dark:border-purple-800 focus:border-purple-300 dark:focus:border-purple-600 rounded-[1.5rem] transition-all duration-200 hover:bg-white dark:hover:bg-gray-900 p-6"
+                    className="mb-4 min-h-[80px] sm:min-h-[100px] bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-purple-100 dark:border-purple-800 focus:border-purple-300 dark:focus:border-purple-600 rounded-[1rem] sm:rounded-[1.5rem] transition-all duration-200 hover:bg-white dark:hover:bg-gray-900 p-4 sm:p-6"
                   />
                   <div className="flex justify-end">
                     <Button 
                       onClick={handleCreatePost}
                       disabled={!newPost.trim()}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-full px-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-full px-6 sm:px-8 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Share Post
                     </Button>
@@ -301,11 +301,11 @@ export function Community() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -2 }}
                 >
-                  <Card className="border-none shadow-md hover:shadow-lg transition-all duration-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-[2rem]">
-                    <CardContent className="pt-6 px-8">
-                      <div className="flex gap-6">
+                  <Card className="border-none shadow-md hover:shadow-lg transition-all duration-200 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-[1.5rem] sm:rounded-[2rem]">
+                    <CardContent className="p-4 sm:pt-6 sm:px-8">
+                      <div className="flex gap-4 sm:gap-6">
                         <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-                          <Avatar className="h-14 w-14 border-4 border-purple-100 dark:border-purple-800 ring-4 ring-purple-50 dark:ring-purple-900/20">
+                          <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 sm:border-4 border-purple-100 dark:border-purple-800 ring-2 sm:ring-4 ring-purple-50 dark:ring-purple-900/20">
                             <AvatarImage loading="lazy" src={post.author.avatar} />
                             <AvatarFallback className="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900">
                               {post.author.name[0]}
@@ -314,11 +314,11 @@ export function Community() {
                         </motion.div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <h3 className="font-semibold text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                            <h3 className="font-semibold text-base sm:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                               {post.author.name}
                             </h3>
-                            <div className="flex items-center gap-4">
-                              <span className="text-sm text-muted-foreground bg-purple-50 dark:bg-purple-900/20 px-4 py-1 rounded-full">
+                            <div className="flex items-center gap-2 sm:gap-4">
+                              <span className="text-xs sm:text-sm text-muted-foreground bg-purple-50 dark:bg-purple-900/20 px-2 sm:px-4 py-1 rounded-full">
                                 {post.time}
                               </span>
                               {post.author.name === "You" && (
@@ -353,12 +353,12 @@ export function Community() {
                               )}
                             </div>
                           </div>
-                          <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">{post.content}</p>
-                          <div className="mt-6 flex gap-6">
+                          <p className="mt-2 sm:mt-4 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">{post.content}</p>
+                          <div className="mt-4 sm:mt-6 flex gap-2 sm:gap-6">
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="gap-2 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-colors rounded-full px-6"
+                              className="gap-2 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-colors rounded-full px-3 sm:px-6"
                               onClick={() => handleLikePost(post.id)}
                             >
                               <Heart className={`h-4 w-4 ${post.likes > 0 ? 'fill-pink-500 text-pink-500' : ''}`} />
@@ -367,7 +367,7 @@ export function Community() {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="gap-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 dark:hover:text-purple-400 transition-colors rounded-full px-6"
+                              className="gap-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 dark:hover:text-purple-400 transition-colors rounded-full px-3 sm:px-6"
                               onClick={() => handleCommentPost(post.id)}
                             >
                               <MessageCircle className="h-4 w-4" />
@@ -376,7 +376,7 @@ export function Community() {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              className="hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-full px-6"
+                              className="hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-full px-3 sm:px-6"
                             >
                               <Share2 className="h-4 w-4" />
                             </Button>
@@ -390,8 +390,8 @@ export function Community() {
             </AnimatePresence>
           </TabsContent>
 
-          <TabsContent value="groups" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
+          <TabsContent value="groups" className="space-y-4 sm:space-y-6">
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
               {[
                 {
                   id: "anxiety-support",
@@ -418,19 +418,19 @@ export function Community() {
                   description: "Focus on personal development and positive thinking."
                 }
               ].map((group) => (
-                <Card key={group.id} className="rounded-[2rem] border-none shadow-md hover:shadow-lg transition-all duration-200">
-                  <CardContent className="pt-6 px-8">
-                    <h3 className="font-medium text-xl mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{group.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-6">{group.description}</p>
+                <Card key={group.id} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md hover:shadow-lg transition-all duration-200">
+                  <CardContent className="p-4 sm:pt-6 sm:px-8">
+                    <h3 className="font-medium text-lg sm:text-xl mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{group.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">{group.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm bg-purple-50 dark:bg-purple-900/20 px-4 py-1 rounded-full">
+                      <span className="text-xs sm:text-sm bg-purple-50 dark:bg-purple-900/20 px-2 sm:px-4 py-1 rounded-full">
                         {group.members} members
                       </span>
                       <Link href={`/community/${group.id}`}>
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="rounded-full px-6 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                          className="rounded-full px-4 sm:px-6 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                         >
                           Join Group
                         </Button>
