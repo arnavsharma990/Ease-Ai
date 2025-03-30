@@ -6,13 +6,19 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Send, Smile, ChevronLeft, Users, LogOut, Ghost } from "lucide-react"
+import { Send, Smile, ChevronLeft, Users, LogOut, Ghost, Menu } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { use } from "react"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type Message = {
   id: string
@@ -151,6 +157,34 @@ export default function GroupChat({ params }: { params: Promise<{ groupName: str
 
   return (
     <div className="container max-w-6xl py-4 sm:py-6 space-y-4 sm:space-y-6">
+      {/* Mobile Navigation */}
+      <div className="sm:hidden">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuItem>
+              <Link href="/" className="w-full">Home</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/chat" className="w-full">AI Chat</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/community" className="w-full">Community</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/journal" className="w-full">Journal</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/profile" className="w-full">Profile</Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/community">
@@ -290,7 +324,7 @@ export default function GroupChat({ params }: { params: Promise<{ groupName: str
                   placeholder="Type a message..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="rounded-full bg-purple-50/50 dark:bg-purple-900/10 border-0 focus-visible:ring-purple-500 text-sm sm:text-base"
+                  className="rounded-full bg-purple-50/50 dark:bg-purple-900/10 border-0 focus-visible:ring-purple-500 text-xs sm:text-base"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault()
