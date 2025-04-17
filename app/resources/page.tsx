@@ -11,7 +11,7 @@ export default function ResourcesPage() {
   }, [])
 
   return (
-    <FeatureLayout title="Mental Health Resources">
+    <FeatureLayout title=" ">
       <Resources />
     </FeatureLayout>
   )

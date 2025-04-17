@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft, Sparkles, RotateCw, X, Send, Bot, Paperclip, SmilePlus, User } from "lucide-react"
+import { ArrowLeft, Sparkles, RotateCw, X, Send, Bot, Mic, SmilePlus, User } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,8 +27,25 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false)
   const [isFirstLoad, setIsFirstLoad] = useState(true)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const emojiButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Load voices when component mounts
+  useEffect(() => {
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices()
+      setVoices(availableVoices)
+    }
+
+    loadVoices()
+    window.speechSynthesis.onvoiceschanged = loadVoices
+    
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null
+    }
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -43,17 +60,110 @@ export default function Chat() {
   }, [messages, isFirstLoad])
 
   const onEmojiClick = (emojiData: EmojiClickData) => {
-    const cursorPosition = (document.querySelector('input') as HTMLInputElement)?.selectionStart || input.length
-    const textBeforeCursor = input.slice(0, cursorPosition)
-    const textAfterCursor = input.slice(cursorPosition)
-    setInput(textBeforeCursor + emojiData.emoji + textAfterCursor)
+    const emoji = emojiData.emoji
+    const newInput = input + emoji
+    setInput(newInput)
     setShowEmojiPicker(false)
+  }
+
+  const speakText = (text: string) => {
+    const synth = window.speechSynthesis
+    const utterance = new SpeechSynthesisUtterance(text)
+
+    const voices = synth.getVoices()
+    // Specifically look for Google English (India) voice
+    const indianVoice = voices.find(
+      voice => 
+        voice.name === "Google English (India)" || // First preference
+        voice.name.includes("English (India)") ||  // Second preference
+        voice.name.includes("en-IN") ||           // Third preference
+        voice.name === "Google UK English Female"  // Fallback
+    )
+
+    if (indianVoice) {
+      utterance.voice = indianVoice
+      console.log("Using voice:", indianVoice.name) // For debugging
+    }
+
+    utterance.lang = 'en-IN'      // Indian English accent
+    utterance.pitch = 1           // Natural pitch
+    utterance.rate = 0.95         // Slightly slower, more human
+
+    synth.speak(utterance)
+  }
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser")
+      return
+    }
+    
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'en-IN'     // Indian English for voice recognition
+    recognition.interimResults = true
+    recognition.continuous = true   // Allow continuous recording
+
+    let finalTranscript = ''
+    let interimTimeout: NodeJS.Timeout
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = ''
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript
+        } else {
+          interimTranscript += transcript
+        }
+      }
+
+      // Update input with interim results
+      if (interimTranscript !== '') {
+        setInput(finalTranscript + interimTranscript)
+      }
+
+      // Clear previous timeout
+      if (interimTimeout) {
+        clearTimeout(interimTimeout)
+      }
+
+      // Set new timeout for ending recognition
+      interimTimeout = setTimeout(() => {
+        recognition.stop()
+        setInput(finalTranscript)
+        setIsListening(false)
+      }, 1500) // Wait 1.5 seconds of silence before stopping
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    recognition.onerror = (err: any) => {
+      console.error("Speech error:", err)
+      setIsListening(false)
+    }
+
+    // Clear any existing recognition
+    window.speechSynthesis.cancel()
+    
+    recognition.start()
+    setIsListening(true)
   }
 
   // Close emoji picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showEmojiPicker && emojiButtonRef.current && !emojiButtonRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      const emojiPickerElement = document.querySelector('.EmojiPickerReact')
+      
+      if (showEmojiPicker && 
+          emojiButtonRef.current && 
+          !emojiButtonRef.current.contains(target) && 
+          emojiPickerElement && 
+          !emojiPickerElement.contains(target)) {
         setShowEmojiPicker(false)
       }
     }
@@ -78,7 +188,7 @@ export default function Chat() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer dummy-token' // Replace with actual auth token if needed
+          'Authorization': 'Bearer dummy-token'
         },
         body: JSON.stringify({ message: userMessage })
       })
@@ -88,12 +198,20 @@ export default function Chat() {
       }
 
       const data = await response.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data.message }])
+      const assistantMessage = data.message
+      
+      // Start speaking immediately when we get the response
+      speakText(assistantMessage)
+      
+      // Then update the UI
+      setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }])
     } catch (error) {
       console.error('Error:', error)
+      const errorMessage = 'I apologize, but I encountered an error. Please try again.'
+      speakText(errorMessage) // Speak error immediately
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'I apologize, but I encountered an error. Please try again.' 
+        content: errorMessage
       }])
     } finally {
       setIsLoading(false)
@@ -219,9 +337,16 @@ export default function Chat() {
             type="button" 
             variant="ghost" 
             size="icon"
-            className="hover:bg-purple-100 dark:hover:bg-gray-700"
+            onClick={startListening}
+            className={cn(
+              "hover:bg-purple-100 dark:hover:bg-gray-700",
+              isListening && "bg-purple-100 dark:bg-gray-700"
+            )}
           >
-            <Paperclip className="h-5 w-5" />
+            <Mic className={cn(
+              "h-5 w-5",
+              isListening && "text-purple-600 animate-pulse"
+            )} />
           </Button>
           <div className="relative">
             <Button 
@@ -242,6 +367,9 @@ export default function Chat() {
                   theme={Theme.LIGHT}
                   height={350}
                   width={300}
+                  searchDisabled
+                  skinTonesDisabled
+                  previewConfig={{ showPreview: false }}
                 />
               </div>
             )}
@@ -249,7 +377,7 @@ export default function Chat() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
+            placeholder={isListening ? "Listening..." : "Type your message..."}
             className="flex-1 bg-transparent border-purple-100 dark:border-gray-700 focus:ring-purple-500 dark:focus:ring-purple-400"
           />
           <Button 

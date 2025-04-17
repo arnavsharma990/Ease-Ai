@@ -9,9 +9,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Metadata } from "next"
-import { NavLink } from "@/components/nav-link"
 import { Toaster } from "@/components/ui/toaster"
 import { Providers } from "./providers"
+import { MainNav } from "@/components/main-nav"
 
 // Optimize font loading
 const inter = Inter({
@@ -31,17 +31,6 @@ export const metadata: Metadata = {
   },
 }
 
-const features = [
-  { title: 'Chat', href: '/chat' },
-  { title: 'Breathing', href: '/breathing' },
-  { title: 'Mood', href: '/mood' },
-  { title: 'Journal', href: '/journal' },
-  { title: 'Community', href: '/community' },
-  { title: 'Resources', href: '/resources' },
-  { title: 'Consultation', href: '/consultation' },
-  { title: 'Analytics', href: '/profile/analytics' },
-]
-
 export default function RootLayout({
   children,
 }: {
@@ -56,8 +45,8 @@ export default function RootLayout({
       </head>
       <body className={cn(
         "min-h-screen bg-background antialiased",
-        "transition-colors duration-300", // Smooth theme transitions
-        "selection:bg-purple-200 selection:text-purple-900", // Text selection styling
+        "transition-colors duration-300",
+        "selection:bg-purple-200 selection:text-purple-900",
         "dark:selection:bg-purple-800 dark:selection:text-purple-100"
       )}>
         <Providers>
@@ -69,15 +58,12 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <div className="relative min-h-screen">
-                {/* Simple gradient background */}
                 <div 
                   className="fixed inset-0 bg-gradient-to-b from-rose-50/90 via-rose-100/50 to-indigo-50/90 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10"
                   aria-hidden="true"
                 />
 
-                {/* Content wrapper */}
                 <div className="relative flex flex-col min-h-screen">
-                  {/* Header */}
                   <header className="sticky top-0 z-50 border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-slate-900/60">
                     <nav className="container flex h-16 items-center justify-between">
                       <div className="flex items-center gap-3 group">
@@ -101,13 +87,7 @@ export default function RootLayout({
                       </div>
                       
                       <div className="flex items-center gap-6">
-                        <div className="hidden md:flex gap-6">
-                          {features.map((item) => (
-                            <NavLink key={item.title} href={item.href}>
-                              {item.title}
-                            </NavLink>
-                          ))}
-                        </div>
+                        <MainNav />
                         <Button 
                           variant="destructive" 
                           asChild
@@ -124,12 +104,10 @@ export default function RootLayout({
                     </nav>
                   </header>
 
-                  {/* Main content */}
                   <main className="flex-1 container py-6 relative">
                     {children}
                   </main>
 
-                  {/* Footer */}
                   <footer className="border-t py-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
                     <div className="container text-center text-sm text-muted-foreground">
                       <p>SukoonAI is an AI assistant for mental wellness support. Not a replacement for professional help.</p>

@@ -29,81 +29,81 @@ const itemVariants = {
 
 const features = [
   {
-    title: "AI Chat Companion",
-    description: "Have meaningful conversations with our AI companion that understands and supports you.",
-    icon: "💭",
+    title: "AI Chat",
+    description: "Experience empathetic conversations with our advanced AI companion, trained to understand and support your emotional well-being.",
+    icon: "🤖",
     href: "/chat",
     color: "from-pink-500 to-rose-500"
   },
   {
-    title: "Breathing Exercises",
-    description: "Guided breathing exercises to help you relax and reduce stress.",
-    icon: "🫁",
-    href: "/breathing",
+    title: "Community",
+    description: "Join a supportive network where you can share experiences, find understanding, and connect with others in a safe, moderated space.",
+    icon: "👥",
+    href: "/community",
+    color: "from-violet-500 to-fuchsia-500"
+  },
+  {
+    title: "Consultation",
+    description: "Schedule personalized sessions with mental health professionals for expert guidance and support on your wellness journey.",
+    icon: "👨‍⚕️",
+    href: "/consultation",
     color: "from-blue-500 to-cyan-500"
   },
   {
-    title: "Mood Tracking",
-    description: "Track and understand your emotional patterns over time.",
+    title: "Analytics",
+    description: "Gain insights into your emotional patterns and progress with detailed analytics and personalized recommendations.",
     icon: "📊",
-    href: "/mood",
-    color: "from-purple-500 to-indigo-500"
-  },
-  {
-    title: "Journaling",
-    description: "Express your thoughts and feelings in a private, secure space.",
-    icon: "📔",
-    href: "/journal",
+    href: "/profile/analytics",
     color: "from-green-500 to-emerald-500"
   },
   {
     title: "Resources",
-    description: "Access helpful mental health resources and information.",
+    description: "Access a curated collection of mental health resources, articles, and educational materials to support your growth.",
     icon: "📚",
     href: "/resources",
     color: "from-yellow-500 to-orange-500"
   },
   {
-    title: "Community",
-    description: "Connect with others, share experiences, and find support in a safe, moderated environment.",
-    icon: "👥",
-    href: "/community",
-    color: "from-violet-500 to-fuchsia-500"
+    title: "Wellness Tools",
+    description: "Explore a suite of interactive tools designed to enhance your mental well-being, from meditation to mood tracking.",
+    icon: "🧘‍♀️",
+    href: "/wellness",
+    color: "from-purple-500 to-indigo-500"
   }
 ]
 
 const services = [
   {
-    title: "24/7 AI Chat Support",
-    description: "Always here to listen and support you"
+    title: "AI Voice Assistant",
+    description: "Chat naturally with voice support in Indian English"
   },
   {
-    title: "Guided Meditation",
-    description: "Find peace with expert-led sessions"
+    title: "Ghost Mode Community",
+    description: "Share anonymously in moderated support groups"
   },
   {
-    title: "Mood Analysis",
-    description: "Understand your emotional patterns"
+    title: "Expert Consultations",
+    description: "Connect with verified mental health professionals"
   },
   {
-    title: "Coping Strategies",
-    description: "Personalized tools for your wellbeing"
+    title: "Smart Analytics",
+    description: "Track your wellness journey with AI insights"
   },
   {
-    title: "Progress Tracking",
-    description: "Monitor your journey to wellness"
+    title: "Interactive Exercises",
+    description: "Engage with personalized wellness activities"
   },
   {
-    title: "Crisis Resources",
-    description: "Immediate help when you need it most"
+    title: "Crisis Support",
+    description: "24/7 emergency resources and helpline access"
   },
   {
-    title: "Community Support",
-    description: "Connect with others on similar journeys"
+    title: "Wellness Integration",
+    description: "Sync with your daily health and meditation apps"
   },
   {
-    title: "Educational Content",
-    description: "Learn about mental health and wellness"
+    title: "Personalized Growth",
+    description: "AI-driven recommendations for your journey"
   }
 ]
 
