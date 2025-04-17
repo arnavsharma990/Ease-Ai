@@ -14,7 +14,8 @@ const consultationTypes = [
     icon: <UserCircle className="w-6 h-6" />,
     duration: "50 minutes",
     price: "₹1,500",
-    color: "from-purple-500 to-violet-500"
+    color: "from-purple-500 to-violet-500",
+    buttonText: "View Consultants"
   },
   {
     id: "stress",
@@ -23,7 +24,8 @@ const consultationTypes = [
     icon: <Brain className="w-6 h-6" />,
     duration: "45 minutes",
     price: "₹1,200",
-    color: "from-pink-500 to-rose-500"
+    color: "from-pink-500 to-rose-500",
+    buttonText: "View Consultants"
   },
   {
     id: "mental",
@@ -32,7 +34,8 @@ const consultationTypes = [
     icon: <GraduationCap className="w-6 h-6" />,
     duration: "60 minutes",
     price: "₹1,800",
-    color: "from-blue-500 to-cyan-500"
+    color: "from-blue-500 to-cyan-500",
+    buttonText: "View Consultants"
   }
 ]
 
@@ -271,34 +274,36 @@ export default function ConsultationPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="relative overflow-hidden border-none shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur">
-                <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${type.color}`} />
+              <Card className="relative overflow-hidden border shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${type.color} text-white mb-3`}>
-                    {type.icon}
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-xl bg-gradient-to-br ${type.color} text-white`}>
+                      {type.icon}
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle>{type.title}</CardTitle>
+                      <CardDescription className="mt-1">
+                        {type.description}
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardTitle>{type.title}</CardTitle>
-                  <CardDescription>{type.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center text-sm">
-                      <Clock className="w-4 h-4 mr-2 text-muted-foreground" />
-                      <span>{type.duration}</span>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4 mr-2" />
+                      {type.duration}
                     </div>
-                    <div className="flex items-center text-sm">
-                      <Shield className="w-4 h-4 mr-2 text-muted-foreground" />
-                      <span>Secure & Confidential</span>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-6">
-                      <div className="text-2xl font-bold">{type.price}</div>
-                      <Button 
-                        className={`w-full bg-gradient-to-r ${type.color} text-white hover:opacity-90 transition-opacity`}
-                      >
-                        View Consultants
-                      </Button>
+                    <div className="text-lg font-bold">
+                      {type.price}
                     </div>
                   </div>
+                  <Button 
+                    className={`w-full bg-gradient-to-r ${type.color} text-white hover:opacity-90 transition-opacity`}
+                    onClick={() => window.location.href = `/consultation/book/${type.id}`}
+                  >
+                    {type.buttonText}
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>

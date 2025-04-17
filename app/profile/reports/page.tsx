@@ -80,43 +80,347 @@ export default function ReportsPage() {
 
   const handleDownload = async () => {
     try {
-      // Get the current tab's content
-      const content = document.querySelector(`[data-state="active"]`) as HTMLElement
-      if (!content) return
+      const report = document.getElementById("reportContent");
+      if (!report) {
+        console.error('Could not find report content');
+        return;
+      }
 
-      // Create canvas from the content with higher quality
-      const canvas = await html2canvas(content, {
-        scale: 2, // Higher scale for better quality
+      // Store current scroll position
+      const scrollPos = window.scrollY;
+
+      // Create canvas with specific settings for PDF quality
+      const canvas = await html2canvas(report, {
+        scale: 1.5,
         useCORS: true,
-        logging: false,
-        backgroundColor: "#fff", // White background to ensure content is visible
-        width: content.scrollWidth,
-        height: content.scrollHeight,
-        windowWidth: content.scrollWidth,
-        windowHeight: content.scrollHeight
-      })
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        windowWidth: report.scrollWidth,
+        windowHeight: report.scrollHeight,
+        onclone: (clonedDoc) => {
+          // Ensure all charts and images are visible in clone
+          const elements = clonedDoc.querySelectorAll('canvas, img, svg');
+          elements.forEach(el => {
+            if (el instanceof HTMLElement) {
+              el.style.visibility = 'visible';
+              el.style.opacity = '1';
+            }
+          });
+        }
+      });
 
-      // Create PDF with A4 dimensions
+      // Restore scroll position
+      window.scrollTo(0, scrollPos);
+
+      // Calculate dimensions
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      // Create PDF with calculated dimensions
       const pdf = new jsPDF({
-        format: 'a4',
-        unit: 'pt'
-      })
+        orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [imgWidth, imgHeight],
+        compress: true,
+        hotfixes: ['px_scaling']
+      });
 
-      // Calculate dimensions to fit the content properly
-      const pageWidth = pdf.internal.pageSize.getWidth()
-      const contentRatio = canvas.height / canvas.width
-      const imgWidth = pageWidth - 40 // 20pt margin on each side
-      const imgHeight = imgWidth * contentRatio
+      // Add image with specific settings
+      pdf.addImage({
+        imageData: canvas,
+        format: 'PNG',
+        x: 0,
+        y: 0,
+        width: imgWidth,
+        height: imgHeight,
+        compression: 'FAST',
+        alias: `image_${new Date().getTime()}`
+      });
 
-      // Add the content image
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 20, 20, imgWidth, imgHeight)
+      // Save the PDF
+      pdf.save(`sukoon-mood-report-${selectedDate.replace(/\s+/g, '-').toLowerCase()}.pdf`);
 
-      // Download PDF
-      pdf.save(`mood-report-${activeTab}-${selectedDate.replace(/\s+/g, '-').toLowerCase()}.pdf`)
     } catch (error) {
-      console.error('Error generating PDF:', error)
+      console.error('Error generating PDF:', error);
     }
-  }
+  };
+
+  const reportContent = (
+    <>
+      {/* Charts Grid */}
+      <div className="grid md:grid-cols-5 gap-6">
+        {/* Mood Distribution */}
+        <Card className="md:col-span-2">
+          <CardContent className="pt-6">
+            <h3 className="text-xl font-semibold mb-4">Mood Distribution</h3>
+            <div className="h-[250px] relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={moodData.distribution}
+                    cx="45%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={75}
+                    paddingAngle={2}
+                    dataKey="value"
+                    startAngle={90}
+                    endAngle={450}
+                  >
+                    {moodData.distribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    content={<PieTooltip />}
+                    cursor={false}
+                    wrapperStyle={{ outline: "none" }}
+                    offset={10}
+                  />
+                  <Legend 
+                    layout="vertical"
+                    align="right"
+                    verticalAlign="middle"
+                    iconType="circle"
+                    iconSize={8}
+                    formatter={(value) => (
+                      <span className="text-sm font-medium">{value}</span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-sm text-muted-foreground text-center mt-4">
+              Based on 7 mood entries
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Weekly Mood Trends */}
+        <Card className="md:col-span-3">
+          <CardContent className="pt-6">
+            <h3 className="text-xl font-semibold mb-4">Weekly Mood Trends</h3>
+            <div className="h-[250px] relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={moodData.weeklyTrends}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="intensity" fill={colors.joyful}>
+                    {moodData.weeklyTrends.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-sm text-muted-foreground text-center mt-4">
+              Daily intensity levels for the past week
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Mood Fluctuations */}
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-xl font-semibold mb-4">Mood Fluctuations Over Time</h3>
+          <div className="h-[300px] relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={moodData.weeklyTrends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Line 
+                  type="monotone" 
+                  dataKey="intensity" 
+                  stroke={colors.joyful}
+                  strokeWidth={2}
+                  dot={{ fill: colors.joyful, strokeWidth: 2 }}
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-sm text-muted-foreground text-center mt-4">
+            Daily mood intensity levels over the selected time period
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* AI Insights */}
+      <Card className="overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-pink-500/5 to-blue-500/5 rounded-full blur-3xl -z-10" />
+        
+        <CardContent className="pt-6 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between"
+          >
+            <h3 className="text-xl font-semibold">AI-Generated Insights</h3>
+            <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full">
+              <Sparkles className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-medium text-blue-500">AI Powered</span>
+            </div>
+          </motion.div>
+
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-muted-foreground"
+          >
+            This week, your mood data shows patterns that reveal insights into your emotional wellbeing. Here's what our AI has observed and the actionable steps you can take.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="grid md:grid-cols-3 gap-4 py-4"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-xl p-4 text-center shadow-sm"
+            >
+              <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+                {moodData.insights.journalEntries}
+              </div>
+              <div className="text-sm text-muted-foreground">Journal Entries</div>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-xl p-4 text-center shadow-sm"
+            >
+              <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
+                {moodData.insights.avgLength}
+              </div>
+              <div className="text-sm text-muted-foreground">Avg. Length</div>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/10 dark:to-rose-900/10 rounded-xl p-4 text-center shadow-sm"
+            >
+              <div className="flex gap-2 justify-center flex-wrap">
+                {moodData.insights.topThemes.map((theme, index) => (
+                  <motion.span 
+                    key={theme}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4 + (index * 0.1) }}
+                    className="bg-gradient-to-r from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 text-pink-700 dark:text-pink-300 px-3 py-1 rounded-full text-sm font-medium"
+                  >
+                    {theme}
+                  </motion.span>
+                ))}
+              </div>
+              <div className="text-sm text-muted-foreground mt-2">Top Themes</div>
+            </motion.div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="grid grid-cols-4 gap-6"
+          >
+            {[
+              {
+                title: "Mood Pattern Recognition",
+                content: "Your mood tends to fluctuate most significantly in the middle of the week. Consider implementing mindfulness practices on Tuesdays and Wednesdays to help maintain emotional balance."
+              },
+              {
+                title: "Journal Analysis",
+                content: "Your journaling shows recurring themes of work-related stress. Setting clearer boundaries between work and personal time could help improve your overall wellbeing."
+              },
+              {
+                title: "Emotional Triggers",
+                content: "Based on your entries, social interactions are often followed by anxiety. Consider exploring specific aspects of social situations that may be triggering this response."
+              },
+              {
+                title: "Positive Reinforcement",
+                content: "You consistently note feeling more joyful after outdoor activities. Incorporating more nature walks into your routine could help boost your mood."
+              }
+            ].map((insight, index) => (
+              <motion.div
+                key={insight.title}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 + (index * 0.1) }}
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.2 }
+                }}
+                className="group relative bg-gradient-to-br from-slate-50 to-white dark:from-slate-900/50 dark:to-slate-900/30 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+              >
+                <h4 className="text-lg font-semibold mb-2">{insight.title}</h4>
+                <div className="overflow-hidden">
+                  <motion.p 
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 0, y: -20 }}
+                    whileHover={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-muted-foreground text-sm"
+                  >
+                    {insight.content}
+                  </motion.p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </CardContent>
+      </Card>
+
+      {/* Recommendations */}
+      <section className="space-y-6">
+        <motion.h3 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-2xl font-semibold"
+        >
+          Recommendations
+        </motion.h3>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              title: "Mindfulness Practice",
+              description: "Try 5-minute breathing exercises when you notice anxiety peaking, usually mid-day."
+            },
+            {
+              title: "Journal Consistency",
+              description: "Consider journaling at the same time each day to establish a reflective routine."
+            },
+            {
+              title: "Sleep Quality",
+              description: "Your mood improves with better sleep. Consider a consistent sleep schedule."
+            }
+          ].map((recommendation, index) => (
+            <motion.div
+              key={recommendation.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 * index }}
+              whileHover={{ 
+                scale: 1.02,
+                transition: { duration: 0.2 }
+              }}
+            >
+              <Card className="h-full transition-shadow hover:shadow-md">
+                <CardContent className="pt-6">
+                  <h4 className="font-semibold mb-2">{recommendation.title}</h4>
+                  <p className="text-muted-foreground">{recommendation.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
 
   return (
     <div className="container max-w-6xl py-10 space-y-8">
@@ -186,279 +490,8 @@ export default function ReportsPage() {
               </TabsList>
             </div>
 
-            <TabsContent value="weekly" className="space-y-8 mt-8">
-              {/* Charts Grid */}
-              <div className="grid md:grid-cols-5 gap-6">
-                {/* Mood Distribution */}
-                <Card className="md:col-span-2">
-                  <CardContent className="pt-6">
-                    <h3 className="text-xl font-semibold mb-4">Mood Distribution</h3>
-                    <div className="h-[250px] relative">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={moodData.distribution}
-                            cx="45%"
-                            cy="50%"
-                            innerRadius={50}
-                            outerRadius={75}
-                            paddingAngle={2}
-                            dataKey="value"
-                            startAngle={90}
-                            endAngle={450}
-                          >
-                            {moodData.distribution.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            content={<PieTooltip />}
-                            cursor={false}
-                            wrapperStyle={{ outline: "none" }}
-                            offset={10}
-                          />
-                          <Legend 
-                            layout="vertical"
-                            align="right"
-                            verticalAlign="middle"
-                            iconType="circle"
-                            iconSize={8}
-                            formatter={(value) => (
-                              <span className="text-sm font-medium">{value}</span>
-                            )}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <p className="text-sm text-muted-foreground text-center mt-4">
-                      Based on 7 mood entries
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Weekly Mood Trends */}
-                <Card className="md:col-span-3">
-                  <CardContent className="pt-6">
-                    <h3 className="text-xl font-semibold mb-4">Weekly Mood Trends</h3>
-                    <div className="h-[250px] relative">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={moodData.weeklyTrends}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                          <XAxis dataKey="date" />
-                          <YAxis />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Bar dataKey="intensity" fill={colors.joyful}>
-                            {moodData.weeklyTrends.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <p className="text-sm text-muted-foreground text-center mt-4">
-                      Daily intensity levels for the past week
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Mood Fluctuations */}
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="text-xl font-semibold mb-4">Mood Fluctuations Over Time</h3>
-                  <div className="h-[300px] relative">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={moodData.weeklyTrends}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Line 
-                          type="monotone" 
-                          dataKey="intensity" 
-                          stroke={colors.joyful}
-                          strokeWidth={2}
-                          dot={{ fill: colors.joyful, strokeWidth: 2 }}
-                          activeDot={{ r: 8 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <p className="text-sm text-muted-foreground text-center mt-4">
-                    Daily mood intensity levels over the selected time period
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* AI Insights */}
-              <Card className="overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl -z-10" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-pink-500/5 to-blue-500/5 rounded-full blur-3xl -z-10" />
-                
-                <CardContent className="pt-6 space-y-6">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between"
-                  >
-                    <h3 className="text-xl font-semibold">AI-Generated Insights</h3>
-                    <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full">
-                      <Sparkles className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm font-medium text-blue-500">AI Powered</span>
-                    </div>
-                  </motion.div>
-
-                  <motion.p 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-muted-foreground"
-                  >
-                    This week, your mood data shows patterns that reveal insights into your emotional wellbeing. Here's what our AI has observed and the actionable steps you can take.
-                  </motion.p>
-
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="grid md:grid-cols-3 gap-4 py-4"
-                  >
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-xl p-4 text-center shadow-sm"
-                    >
-                      <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-                        {moodData.insights.journalEntries}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Journal Entries</div>
-                    </motion.div>
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-xl p-4 text-center shadow-sm"
-                    >
-                      <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-                        {moodData.insights.avgLength}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Avg. Length</div>
-                    </motion.div>
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/10 dark:to-rose-900/10 rounded-xl p-4 text-center shadow-sm"
-                    >
-                      <div className="flex gap-2 justify-center flex-wrap">
-                        {moodData.insights.topThemes.map((theme, index) => (
-                          <motion.span 
-                            key={theme}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.4 + (index * 0.1) }}
-                            className="bg-gradient-to-r from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 text-pink-700 dark:text-pink-300 px-3 py-1 rounded-full text-sm font-medium"
-                          >
-                            {theme}
-                          </motion.span>
-                        ))}
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-2">Top Themes</div>
-                    </motion.div>
-                  </motion.div>
-
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="grid grid-cols-4 gap-6"
-                  >
-                    {[
-                      {
-                        title: "Mood Pattern Recognition",
-                        content: "Your mood tends to fluctuate most significantly in the middle of the week. Consider implementing mindfulness practices on Tuesdays and Wednesdays to help maintain emotional balance."
-                      },
-                      {
-                        title: "Journal Analysis",
-                        content: "Your journaling shows recurring themes of work-related stress. Setting clearer boundaries between work and personal time could help improve your overall wellbeing."
-                      },
-                      {
-                        title: "Emotional Triggers",
-                        content: "Based on your entries, social interactions are often followed by anxiety. Consider exploring specific aspects of social situations that may be triggering this response."
-                      },
-                      {
-                        title: "Positive Reinforcement",
-                        content: "You consistently note feeling more joyful after outdoor activities. Incorporating more nature walks into your routine could help boost your mood."
-                      }
-                    ].map((insight, index) => (
-                      <motion.div
-                        key={insight.title}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.6 + (index * 0.1) }}
-                        whileHover={{ 
-                          scale: 1.05,
-                          transition: { duration: 0.2 }
-                        }}
-                        className="group relative bg-gradient-to-br from-slate-50 to-white dark:from-slate-900/50 dark:to-slate-900/30 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
-                      >
-                        <h4 className="text-lg font-semibold mb-2">{insight.title}</h4>
-                        <div className="overflow-hidden">
-                          <motion.p 
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 0, y: -20 }}
-                            whileHover={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="text-muted-foreground text-sm"
-                          >
-                            {insight.content}
-                          </motion.p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                </CardContent>
-              </Card>
-
-              {/* Recommendations */}
-              <section className="space-y-6">
-                <motion.h3 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-2xl font-semibold"
-                >
-                  Recommendations
-                </motion.h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {[
-                    {
-                      title: "Mindfulness Practice",
-                      description: "Try 5-minute breathing exercises when you notice anxiety peaking, usually mid-day."
-                    },
-                    {
-                      title: "Journal Consistency",
-                      description: "Consider journaling at the same time each day to establish a reflective routine."
-                    },
-                    {
-                      title: "Sleep Quality",
-                      description: "Your mood improves with better sleep. Consider a consistent sleep schedule."
-                    }
-                  ].map((recommendation, index) => (
-                    <motion.div
-                      key={recommendation.title}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 * index }}
-                      whileHover={{ 
-                        scale: 1.02,
-                        transition: { duration: 0.2 }
-                      }}
-                    >
-                      <Card className="h-full transition-shadow hover:shadow-md">
-                        <CardContent className="pt-6">
-                          <h4 className="font-semibold mb-2">{recommendation.title}</h4>
-                          <p className="text-muted-foreground">{recommendation.description}</p>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              </section>
+            <TabsContent value="weekly" className="space-y-8 mt-8" id="reportContent">
+              {reportContent}
             </TabsContent>
 
             <TabsContent value="monthly">
@@ -1026,6 +1059,25 @@ export default function ReportsPage() {
               </div>
             </TabsContent>
           </Tabs>
+        </div>
+
+        {/* Hidden export clone */}
+        <div 
+          id="exportClone" 
+          className="fixed opacity-0 pointer-events-none"
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            top: 0,
+            width: '100%',
+            height: 'auto',
+            background: '#ffffff',
+            padding: '2rem',
+            zIndex: -9999,
+            visibility: 'hidden'
+          }}
+        >
+          {reportContent}
         </div>
       </motion.div>
     </div>

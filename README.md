@@ -1,6 +1,5 @@
 # Sukoon AI - Your Mental Wellness Companion 🌟
 
-![Sukoon AI Banner](public/banner.png)
 
 ## About Sukoon AI
 

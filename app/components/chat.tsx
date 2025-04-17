@@ -71,25 +71,35 @@ export default function Chat() {
     const utterance = new SpeechSynthesisUtterance(text)
 
     const voices = synth.getVoices()
-    // Specifically look for Google English (India) voice
+    // Try to find Indian English voice
     const indianVoice = voices.find(
       voice => 
-        voice.name === "Google English (India)" || // First preference
-        voice.name.includes("English (India)") ||  // Second preference
-        voice.name.includes("en-IN") ||           // Third preference
-        voice.name === "Google UK English Female"  // Fallback
+        voice.name === "Google हिन्दी" ||           // Hindi voice
+        voice.name.includes("en-IN") ||            // Indian English
+        voice.name.includes("English (India)") ||   // Another variant
+        voice.name === "Google UK English Female"   // Fallback
     )
 
     if (indianVoice) {
       utterance.voice = indianVoice
-      console.log("Using voice:", indianVoice.name) // For debugging
+      console.log("Using voice:", indianVoice.name)
     }
 
-    utterance.lang = 'en-IN'      // Indian English accent
-    utterance.pitch = 1           // Natural pitch
-    utterance.rate = 0.95         // Slightly slower, more human
+    // Set Indian English language
+    utterance.lang = 'en-IN'
+    
+    // Adjust speech parameters
+    utterance.pitch = 1.0     // Natural pitch
+    utterance.rate = 1.1      // Slightly faster than normal
+    utterance.volume = 1.0    // Full volume
 
-    synth.speak(utterance)
+    // Cancel any ongoing speech
+    synth.cancel()
+    
+    // Quick response
+    setTimeout(() => {
+      synth.speak(utterance)
+    }, 50)
   }
 
   const startListening = () => {
