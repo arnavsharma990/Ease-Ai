@@ -14,15 +14,15 @@ export function Resources() {
       <Card className="rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border-none shadow-lg">
         <CardHeader className="p-3 sm:p-6">
           <CardTitle className="text-lg sm:text-2xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Mental Health Resources</CardTitle>
-        </CardHeader>
+      </CardHeader>
         <CardContent className="p-3 sm:p-6">
-          <Tabs defaultValue="crisis" className="w-full">
+        <Tabs defaultValue="crisis" className="w-full">
             <TabsList className="grid w-full sm:w-[400px] grid-cols-4 rounded-full p-1 bg-purple-50 dark:bg-purple-900/10 mb-6">
               <TabsTrigger value="crisis" className="rounded-full text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900">Crisis</TabsTrigger>
               <TabsTrigger value="articles" className="rounded-full text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900">Articles</TabsTrigger>
               <TabsTrigger value="videos" className="rounded-full text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900">Videos</TabsTrigger>
               <TabsTrigger value="apps" className="rounded-full text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900">Apps</TabsTrigger>
-            </TabsList>
+          </TabsList>
 
             <ScrollArea className="h-[600px] pr-4">
               <TabsContent value="crisis" className="space-y-4 mt-0">
@@ -35,12 +35,12 @@ export function Resources() {
                     <CardContent className="p-4 sm:p-6">
                       <h3 className="text-base sm:text-lg font-semibold text-red-600 dark:text-red-400 flex items-center mb-2">
                         <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                        Immediate Help
-                      </h3>
+                  Immediate Help
+                </h3>
                       <p className="text-xs sm:text-sm text-red-500 dark:text-red-300">
-                        If you're experiencing a mental health emergency, please contact emergency services or a crisis
-                        hotline immediately.
-                      </p>
+                  If you're experiencing a mental health emergency, please contact emergency services or a crisis
+                  hotline immediately.
+                </p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -115,13 +115,13 @@ export function Resources() {
                                 </a>
                               </Button>
                             </div>
-                          </div>
+              </div>
                         </CardContent>
                       </Card>
                     </motion.div>
                   ))}
-                </div>
-              </TabsContent>
+              </div>
+            </TabsContent>
 
               <TabsContent value="articles" className="space-y-4 mt-0">
                 <div className="grid gap-4">
@@ -168,7 +168,7 @@ export function Resources() {
                           <div className="flex flex-col gap-2">
                             <h3 className="font-semibold text-sm sm:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                               {article.title}
-                            </h3>
+              </h3>
                             <p className="text-xs sm:text-sm text-muted-foreground">{article.description}</p>
                             <div className="flex items-center gap-2 mt-2">
                               <span className="text-[10px] sm:text-xs text-muted-foreground bg-purple-50 dark:bg-purple-900/20 px-2 sm:px-4 py-0.5 sm:py-1 rounded-full">
@@ -191,8 +191,8 @@ export function Resources() {
                       </Card>
                     </motion.div>
                   ))}
-                </div>
-              </TabsContent>
+              </div>
+            </TabsContent>
 
               <TabsContent value="videos" className="space-y-4 mt-0">
                 <div className="grid gap-4">
@@ -244,7 +244,7 @@ export function Resources() {
                           <div className="flex flex-col gap-2">
                             <h3 className="font-semibold text-sm sm:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                               {video.title}
-                            </h3>
+              </h3>
                             <p className="text-xs sm:text-sm text-muted-foreground">{video.description}</p>
                             <div className="flex flex-wrap items-center gap-2 mt-2">
                               <span className="text-[10px] sm:text-xs text-muted-foreground bg-purple-50 dark:bg-purple-900/20 px-2 sm:px-4 py-0.5 sm:py-1 rounded-full flex items-center gap-1">
@@ -271,8 +271,8 @@ export function Resources() {
                       </Card>
                     </motion.div>
                   ))}
-                </div>
-              </TabsContent>
+              </div>
+            </TabsContent>
 
               <TabsContent value="apps" className="space-y-4 mt-0">
                 <div className="grid gap-4">
@@ -324,7 +324,7 @@ export function Resources() {
                           <div className="flex flex-col gap-2">
                             <h3 className="font-semibold text-sm sm:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                               {app.title}
-                            </h3>
+              </h3>
                             <p className="text-xs sm:text-sm text-muted-foreground">{app.description}</p>
                             <div className="flex flex-wrap items-center gap-2 mt-2">
                               <span className="text-[10px] sm:text-xs text-muted-foreground bg-purple-50 dark:bg-purple-900/20 px-2 sm:px-4 py-0.5 sm:py-1 rounded-full">
@@ -351,12 +351,12 @@ export function Resources() {
                       </Card>
                     </motion.div>
                   ))}
-                </div>
-              </TabsContent>
-            </ScrollArea>
-          </Tabs>
-        </CardContent>
-      </Card>
+              </div>
+            </TabsContent>
+          </ScrollArea>
+        </Tabs>
+      </CardContent>
+    </Card>
     </div>
   )
 }
