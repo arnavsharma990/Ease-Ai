@@ -5,6 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Brain, Clock, Heart, Shield, UserCircle, Lock, Users, Sparkles, GraduationCap, Diamond, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 const consultationTypes = [
   {
@@ -255,9 +263,45 @@ export default function ConsultationPage() {
           >
             Book a Consultation
           </Button>
-          <Button size="lg" variant="outline">
-            Learn More
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="lg" variant="outline">
+                Learn More
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 text-transparent bg-clip-text">
+                  Our Consultation Services
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-3">
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Services:</h3>
+                  <ul className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                    <li>• Therapy Sessions</li>
+                    <li>• Stress Management</li>
+                    <li>• Mental Exercises</li>
+                    <li>• Progress Tracking</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Features:</h3>
+                  <ul className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                    <li>• Licensed Experts</li>
+                    <li>• Flexible Scheduling</li>
+                    <li>• Confidential Care</li>
+                    <li>• Online Sessions</li>
+                  </ul>
+                </div>
+                <div className="bg-muted p-3 rounded-lg mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Get professional mental health support in a safe, confidential environment with our experienced counselors.
+                  </p>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
 

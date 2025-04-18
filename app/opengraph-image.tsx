@@ -4,7 +4,7 @@ import { ImageResponse } from "next/og"
 export const runtime = "edge"
 
 // Image metadata
-export const alt = "SukoonAI - Mental Wellness Assistant"
+export const alt = "Sukoon - Mental Wellness Assistant"
 export const size = {
   width: 1200,
   height: 630,
@@ -55,7 +55,7 @@ export default function Image() {
             />
           </svg>
         </div>
-        <div style={{ fontSize: "72px", fontWeight: "bold", color: "white" }}>SukoonAI</div>
+        <div style={{ fontSize: "72px", fontWeight: "bold", color: "white" }}>Sukoon</div>
       </div>
       <div style={{ fontSize: "36px", color: "white", textAlign: "center" }}>
         Your AI-powered mental wellness assistant

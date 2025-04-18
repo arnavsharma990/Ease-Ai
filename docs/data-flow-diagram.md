@@ -1,4 +1,4 @@
-# SukoonAI Data Flow Diagram
+# Sukoon Data Flow Diagram
 
 ## System Overview
 

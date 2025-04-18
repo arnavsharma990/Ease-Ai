@@ -123,7 +123,7 @@ export default function Home() {
               Your Mental Health Journey
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Start your journey to better mental health with SukoonAI. Our AI-powered platform
+              Start your journey to better mental health with Sukoon. Our AI-powered platform
               provides personalized support, guided exercises, and tools to help you understand
               and improve your mental wellbeing.
             </p>

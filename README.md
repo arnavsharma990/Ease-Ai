@@ -77,7 +77,7 @@ Sukoon AI takes user privacy seriously. All personal data is encrypted and store
 
 ## 📞 Support
 
-For support, please email support@sukoonai.com or join our [Discord community](https://discord.gg/sukoonai).
+For support, please email support@sukoon.com or join our [Discord community](https://discord.gg/sukoon).
 
 ## 🌟 Acknowledgments
 

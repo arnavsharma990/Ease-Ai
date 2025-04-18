@@ -24,7 +24,7 @@ const inter = Inter({
 
 // Add metadata for better SEO and performance hints
 export const metadata: Metadata = {
-  title: "Sukoon AI",
+  title: "Sukoon",
   description: "Your AI Mental Health Companion",
   icons: {
     icon: '/favicon.ico',
@@ -71,7 +71,7 @@ export default function RootLayout({
                           <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-500" />
                           <Image
                             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sukoonAI%20logo-HcziUhbd1eIKlUo474fj9tI9blzLeT.png"
-                            alt="SukoonAI Logo"
+                            alt="Sukoon Logo"
                             width={32}
                             height={32}
                             className="relative rounded-lg transform group-hover:scale-105 transition duration-500"
@@ -82,7 +82,7 @@ export default function RootLayout({
                           href="/" 
                           className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:from-purple-500 hover:to-blue-500 transition-all duration-300"
                         >
-                          SukoonAI
+                          Sukoon
                         </Link>
                       </div>
                       
@@ -110,7 +110,7 @@ export default function RootLayout({
 
                   <footer className="border-t py-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
                     <div className="container text-center text-sm text-muted-foreground">
-                      <p>SukoonAI is an AI assistant for mental wellness support. Not a replacement for professional help.</p>
+                      <p>Sukoon is an AI assistant for mental wellness support. Not a replacement for professional help.</p>
                       <p className="mt-2">
                         If you're experiencing a crisis, please contact a mental health professional or crisis hotline.
                       </p>
