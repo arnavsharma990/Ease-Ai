@@ -26,7 +26,7 @@ export default function Icon() {
         {/* @ts-ignore */}
         <img
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sukoonAI%20logo-HcziUhbd1eIKlUo474fj9tI9blzLeT.png"
-          alt="Sukoon Logo"
+          alt="TakeIt Ease Logo"
           style={{
             width: '100%',
             height: '100%',

@@ -24,7 +24,7 @@ const inter = Inter({
 
 // Add metadata for better SEO and performance hints
 export const metadata: Metadata = {
-  title: "Sukoon",
+  title: "TakeIt Ease",
   description: "Your AI Mental Health Companion",
   icons: {
     icon: '/favicon.ico',
@@ -71,7 +71,7 @@ export default function RootLayout({
                           <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-500" />
                           <Image
                             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sukoonAI%20logo-HcziUhbd1eIKlUo474fj9tI9blzLeT.png"
-                            alt="Sukoon Logo"
+                            alt="TakeIt Ease Logo"
                             width={32}
                             height={32}
                             className="relative rounded-lg transform group-hover:scale-105 transition duration-500"
